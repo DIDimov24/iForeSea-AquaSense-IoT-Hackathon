@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
 import { BEACHES, classify, riskColor, riskLabel } from '@/lib/risk';
 
 function Sparkline({ data, color }: { data: number[]; color: string }) {
@@ -77,9 +79,9 @@ export function RiskStrip({ locationId, heading = true }: Props) {
             const cls = classify(b.chl);
             const color = riskColor(cls);
             const trendUp = b.trend > 0;
-            const Card = (
-              <article
-                className={`glass group relative overflow-hidden rounded-3xl p-6 transition ${
+            const CardEl = (
+              <Card
+                className={`glass group relative overflow-hidden rounded-3xl bg-transparent p-6 transition ${
                   single ? '' : 'hover:-translate-y-1'
                 }`}
               >
@@ -95,16 +97,20 @@ export function RiskStrip({ locationId, heading = true }: Props) {
                         style={{ background: color }}
                       />
                     </div>
-                    <span className="text-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                    <Badge
+                      variant="outline"
+                      className="text-mono border-transparent bg-transparent px-0 text-[10px] uppercase tracking-widest text-muted-foreground"
+                    >
                       {b.id}
-                    </span>
+                    </Badge>
                   </div>
-                  <span
-                    className="text-mono text-[10px] uppercase tracking-widest"
+                  <Badge
+                    variant="outline"
+                    className="text-mono border-transparent bg-transparent px-0 text-[10px] uppercase tracking-widest"
                     style={{ color }}
                   >
                     {riskLabel(cls)}
-                  </span>
+                  </Badge>
                 </div>
 
                 <h3 className="relative mt-6 text-2xl font-medium text-foreground">{b.name}</h3>
@@ -132,13 +138,13 @@ export function RiskStrip({ locationId, heading = true }: Props) {
                     <span>T+5</span>
                   </div>
                 </div>
-              </article>
+              </Card>
             );
             return single ? (
-              <div key={b.id}>{Card}</div>
+              <div key={b.id}>{CardEl}</div>
             ) : (
               <Link key={b.id} href={`/beaches/${b.id}`} className="block">
-                {Card}
+                {CardEl}
               </Link>
             );
           })}

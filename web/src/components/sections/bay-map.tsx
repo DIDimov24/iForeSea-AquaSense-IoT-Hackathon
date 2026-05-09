@@ -2,6 +2,11 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 import { BEACHES, classify, riskColor, riskLabel } from '@/lib/risk';
 
 const PINS: Record<string, { x: number; y: number }> = {
@@ -26,7 +31,7 @@ export function BayMap() {
           </h2>
         </div>
 
-        <div className="glass relative overflow-hidden rounded-3xl">
+        <Card className="glass relative overflow-hidden rounded-3xl bg-transparent p-0">
           <div className="grid gap-0 md:grid-cols-[1fr_320px]">
             <div className="relative aspect-[4/3] overflow-hidden bg-muted">
               <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full">
@@ -122,44 +127,51 @@ export function BayMap() {
                     Sensor station
                   </div>
                   <h3 className="mt-2 text-2xl font-medium text-foreground">{beach.name}</h3>
-                  <div
-                    className="text-mono mt-1 text-xs uppercase tracking-widest"
+                  <Badge
+                    variant="outline"
+                    className="text-mono mt-1 border-transparent bg-transparent px-0 text-xs uppercase tracking-widest"
                     style={{ color: riskColor(classify(beach.chl)) }}
                   >
                     {riskLabel(classify(beach.chl))}
-                  </div>
+                  </Badge>
 
-                  <dl className="mt-6 space-y-3 text-sm">
+                  <dl className="mt-6 text-sm">
                     {[
                       { k: 'Chl-a', v: `${beach.chl.toFixed(1)} µg/L` },
                       { k: 'Sea temp', v: '21.4 °C' },
                       { k: 'Salinity', v: '17.8 PSU' },
                       { k: 'Nitrate', v: '0.42 mg/L' },
                       { k: 'Wind', v: 'NE 3.2 m/s' },
-                    ].map((row) => (
-                      <div
-                        key={row.k}
-                        className="flex justify-between border-b border-border pb-2"
-                      >
-                        <dt className="text-muted-foreground">{row.k}</dt>
-                        <dd className="text-mono text-foreground">{row.v}</dd>
+                    ].map((row, i, arr) => (
+                      <div key={row.k}>
+                        <div className="flex justify-between py-2">
+                          <dt className="text-muted-foreground">{row.k}</dt>
+                          <dd className="text-mono text-foreground">{row.v}</dd>
+                        </div>
+                        {i < arr.length - 1 && <Separator />}
                       </div>
                     ))}
                   </dl>
 
-                  <Link
-                    href={`/beaches/${beach.id}`}
-                    className="text-mono mt-8 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-[color-mix(in_oklab,var(--primary)_8%,transparent)] px-4 py-2 text-xs uppercase tracking-widest text-foreground transition hover:border-primary/70 hover:bg-[color-mix(in_oklab,var(--primary)_18%,transparent)]"
-                  >
-                    Open beach <span aria-hidden>→</span>
-                  </Link>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    nativeButton={false}
+                    className="text-mono mt-8 rounded-full border-primary/40 bg-[color-mix(in_oklab,var(--primary)_8%,transparent)] text-xs uppercase tracking-widest text-foreground hover:border-primary/70 hover:bg-[color-mix(in_oklab,var(--primary)_18%,transparent)]"
+                    render={
+                      <Link href={`/beaches/${beach.id}`}>
+                        Open beach <ArrowRight />
+                      </Link>
+                    }
+                  />
+
                 </div>
               ) : (
                 <p className="text-sm text-muted-foreground">Pick a pin.</p>
               )}
             </aside>
           </div>
-        </div>
+        </Card>
       </div>
     </section>
   );

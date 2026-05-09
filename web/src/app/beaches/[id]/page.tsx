@@ -1,6 +1,9 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import { ForecastTimeline, RiskStrip } from '@/components/sections';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { BEACHES, classify, riskColor, riskLabel } from '@/lib/risk';
 
 const IDS = ['sarafovo', 'central', 'kraimorie'] as const;
@@ -30,12 +33,17 @@ export default async function BeachPage({ params }: { params: Promise<Params> })
     <>
       <section className="relative border-b border-border bg-card">
         <div className="relative z-10 mx-auto max-w-6xl px-6 py-8 md:px-12 md:py-10">
-          <Link
-            href="/map"
-            className="text-mono inline-flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground transition hover:text-primary"
-          >
-            <span aria-hidden>←</span> Map
-          </Link>
+          <Button
+            variant="ghost"
+            size="sm"
+            nativeButton={false}
+            className="text-mono px-0 text-xs uppercase tracking-widest text-muted-foreground hover:bg-transparent hover:text-primary"
+            render={
+              <Link href="/map">
+                <ArrowLeft /> Map
+              </Link>
+            }
+          />
           <div className="mt-6">
             <div className="text-mono text-xs uppercase tracking-widest text-primary">
               · Beach · {beach.id}
@@ -43,12 +51,13 @@ export default async function BeachPage({ params }: { params: Promise<Params> })
             <h1 className="mt-3 text-5xl font-medium tracking-tight text-foreground md:text-7xl">
               {beach.name}
             </h1>
-            <div
-              className="text-mono mt-3 text-xs uppercase tracking-widest"
+            <Badge
+              variant="outline"
+              className="text-mono mt-3 border-transparent bg-transparent px-0 text-xs uppercase tracking-widest"
               style={{ color }}
             >
               {riskLabel(cls)} · {beach.chl.toFixed(1)} µg/L chl-a
-            </div>
+            </Badge>
           </div>
         </div>
       </section>

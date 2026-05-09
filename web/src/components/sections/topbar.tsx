@@ -1,9 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
+import { Menu } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Sidebar } from './sidebar';
 
 const TITLES: Record<string, { eyebrow: string; title: string }> = {
@@ -30,17 +33,17 @@ export function Topbar() {
     <>
       <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-4 border-b border-border bg-card/80 px-4 backdrop-blur-md md:px-6">
         <div className="flex min-w-0 items-center gap-3">
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="icon"
             aria-label="Open menu"
             aria-expanded={open}
             onClick={() => setOpen(true)}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border text-foreground hover:bg-secondary/10 md:hidden"
+            className="md:hidden"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
-              <path d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
+            <Menu />
+          </Button>
           <div className="min-w-0">
             <div className="text-mono text-[10px] uppercase tracking-widest text-muted-foreground">
               {eyebrow}
@@ -50,10 +53,13 @@ export function Topbar() {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="text-mono hidden items-center gap-2 rounded-md border border-border bg-background px-2.5 py-1.5 text-[11px] text-muted-foreground sm:flex">
+          <Badge
+            variant="outline"
+            className="text-mono hidden bg-background text-[11px] text-muted-foreground sm:inline-flex"
+          >
             <span className="h-1.5 w-1.5 rounded-full bg-[var(--chl)] ring-pulse" />
             All sensors online
-          </div>
+          </Badge>
           <div className="text-mono hidden text-[11px] text-muted-foreground lg:block">
             Burgas Bay · updated 04:12 ago
           </div>
@@ -61,30 +67,15 @@ export function Topbar() {
         </div>
       </header>
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            key="overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.18 }}
-            className="fixed inset-0 z-40 bg-foreground/40 backdrop-blur-sm md:hidden"
-            onClick={() => setOpen(false)}
-          >
-            <motion.div
-              initial={{ x: -280 }}
-              animate={{ x: 0 }}
-              exit={{ x: -280 }}
-              transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-              className="absolute inset-y-0 left-0 w-[260px]"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Sidebar onNavigate={() => setOpen(false)} />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetContent
+          side="left"
+          showCloseButton={false}
+          className="w-[260px] p-0 sm:max-w-[260px] md:hidden"
+        >
+          <Sidebar onNavigate={() => setOpen(false)} />
+        </SheetContent>
+      </Sheet>
     </>
   );
 }

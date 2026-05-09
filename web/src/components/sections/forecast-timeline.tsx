@@ -1,6 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
+import { Slider } from '@/components/ui/slider';
 import { BEACHES, classify, riskColor, riskLabel } from '@/lib/risk';
 
 const DAYS = ['Today', 'T+1', 'T+2', 'T+3', 'T+4', 'T+5'];
@@ -30,7 +33,7 @@ export function ForecastTimeline({ locationId, heading = true }: Props) {
           </div>
         )}
 
-        <div className="glass rounded-3xl p-8 md:p-12">
+        <Card className="glass rounded-3xl bg-transparent p-8 md:p-12">
           <div className={`grid gap-10 ${single ? '' : 'md:grid-cols-3'}`}>
             {beaches.map((b) => {
               const v = b.forecast[t];
@@ -50,12 +53,13 @@ export function ForecastTimeline({ locationId, heading = true }: Props) {
                     </span>
                     <span className="text-mono text-xs text-muted-foreground">µg/L</span>
                   </div>
-                  <div
-                    className="text-mono mt-1 text-xs uppercase tracking-widest"
+                  <Badge
+                    variant="outline"
+                    className="text-mono mt-1 border-transparent bg-transparent px-0 text-xs uppercase tracking-widest"
                     style={{ color }}
                   >
                     {riskLabel(cls)}
-                  </div>
+                  </Badge>
                   <div className="bg-muted mt-4 h-1.5 w-full overflow-hidden rounded-full">
                     <div
                       className="h-full transition-all duration-500"
@@ -72,13 +76,13 @@ export function ForecastTimeline({ locationId, heading = true }: Props) {
           </div>
 
           <div className="mt-12">
-            <input
-              type="range"
+            <Slider
               min={0}
               max={5}
-              value={t}
-              onChange={(e) => setT(Number(e.target.value))}
-              className="accent-primary w-full"
+              step={1}
+              value={[t]}
+              onValueChange={(v) => setT(typeof v === 'number' ? v : v[0])}
+              className="w-full"
             />
             <div className="text-mono mt-3 flex justify-between text-[10px] uppercase tracking-widest text-muted-foreground">
               {DAYS.map((d, i) => (
@@ -92,7 +96,7 @@ export function ForecastTimeline({ locationId, heading = true }: Props) {
               ))}
             </div>
           </div>
-        </div>
+        </Card>
       </div>
     </section>
   );

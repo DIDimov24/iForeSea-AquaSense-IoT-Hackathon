@@ -2,64 +2,20 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { BookOpen, Info, LayoutGrid, Map as MapIcon, type LucideIcon } from 'lucide-react';
 
-const NAV = [
-  { href: '/', label: 'Home', icon: 'grid' },
-  { href: '/map', label: 'Map', icon: 'map' },
-  { href: '/method', label: 'Method', icon: 'book' },
-  { href: '/about', label: 'About', icon: 'info' },
-] as const;
+const NAV: ReadonlyArray<{ href: string; label: string; icon: LucideIcon }> = [
+  { href: '/', label: 'Home', icon: LayoutGrid },
+  { href: '/map', label: 'Map', icon: MapIcon },
+  { href: '/method', label: 'Method', icon: BookOpen },
+  { href: '/about', label: 'About', icon: Info },
+];
 
 const BEACHES = [
   { id: 'sarafovo', label: 'Sarafovo' },
   { id: 'central', label: 'Central' },
   { id: 'kraimorie', label: 'Kraimorie' },
 ] as const;
-
-function Icon({ name }: { name: (typeof NAV)[number]['icon'] }) {
-  const common = {
-    width: 16,
-    height: 16,
-    viewBox: '0 0 24 24',
-    fill: 'none',
-    stroke: 'currentColor',
-    strokeWidth: 1.6,
-    strokeLinecap: 'round' as const,
-    strokeLinejoin: 'round' as const,
-  };
-  switch (name) {
-    case 'grid':
-      return (
-        <svg {...common}>
-          <rect x="3" y="3" width="7" height="7" rx="1.2" />
-          <rect x="14" y="3" width="7" height="7" rx="1.2" />
-          <rect x="3" y="14" width="7" height="7" rx="1.2" />
-          <rect x="14" y="14" width="7" height="7" rx="1.2" />
-        </svg>
-      );
-    case 'map':
-      return (
-        <svg {...common}>
-          <path d="M9 3 3 5v16l6-2 6 2 6-2V3l-6 2-6-2Z" />
-          <path d="M9 3v16M15 5v16" />
-        </svg>
-      );
-    case 'book':
-      return (
-        <svg {...common}>
-          <path d="M4 4h10a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4V4Z" />
-          <path d="M4 16h14" />
-        </svg>
-      );
-    case 'info':
-      return (
-        <svg {...common}>
-          <circle cx="12" cy="12" r="9" />
-          <path d="M12 11v5M12 8h.01" />
-        </svg>
-      );
-  }
-}
 
 function isActive(pathname: string, href: string) {
   if (href === '/') return pathname === '/';
@@ -88,6 +44,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         <ul className="flex flex-col gap-0.5">
           {NAV.map((l) => {
             const active = isActive(pathname, l.href);
+            const IconCmp = l.icon;
             return (
               <li key={l.href}>
                 <Link
@@ -101,13 +58,11 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                   ].join(' ')}
                   aria-current={active ? 'page' : undefined}
                 >
-                  <span
-                    className={
-                      active ? 'text-primary' : 'text-muted-foreground'
-                    }
-                  >
-                    <Icon name={l.icon} />
-                  </span>
+                  <IconCmp
+                    className={active ? 'text-primary' : 'text-muted-foreground'}
+                    size={16}
+                    strokeWidth={1.6}
+                  />
                   <span>{l.label}</span>
                 </Link>
               </li>

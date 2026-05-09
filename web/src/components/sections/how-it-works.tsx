@@ -1,3 +1,6 @@
+import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
+
 const STEPS = [
   {
     n: '01',
@@ -40,17 +43,20 @@ export function HowItWorks() {
 
         <div className="relative grid gap-4 md:grid-cols-4">
           {STEPS.map((s) => (
-            <div
+            <Card
               key={s.n}
-              className="glass relative rounded-2xl p-6 transition hover:border-primary/40"
+              className="glass relative rounded-2xl bg-transparent p-6 transition hover:border-primary/40"
             >
               <div className="text-mono text-xs text-primary">{s.n}</div>
               <h3 className="mt-4 text-lg font-medium text-foreground">{s.t}</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.d}</p>
-              <div className="text-mono mt-5 inline-block rounded-full border border-border px-2.5 py-1 text-[10px] text-muted-foreground">
+              <Badge
+                variant="outline"
+                className="text-mono mt-5 w-fit rounded-full border-border px-2.5 py-1 text-[10px] text-muted-foreground"
+              >
                 {s.tag}
-              </div>
-            </div>
+              </Badge>
+            </Card>
           ))}
         </div>
       </div>
