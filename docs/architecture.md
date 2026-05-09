@@ -8,7 +8,7 @@ This document describes how data flows through the iForeSea platform - from sens
 [Water-quality sensors]
         │  Twice-daily readings: temperature, NO₃, PO₄, turbidity, chlorophyll-a
         ▼
-[Raw CSV: data/raw/water_quality_burgas_simulated.csv]
+[Raw CSV: data/raw/water_quality_burgas_simulated_2025_2026.csv]
         │
         ▼
 [ML training pipeline (ml/)]

@@ -2,16 +2,17 @@
 
 This document describes the columns of the simulated Burgas Bay water-quality dataset.
 
-> **Source of truth for column names and units:** the header of `data/raw/water_quality_burgas_simulated.csv`. This file documents the **meaning** of each column, not its raw structure.
+> **Source of truth for column names and units:** the header of `data/raw/water_quality_burgas_simulated_2025_2026.csv`. This file documents the **meaning** of each column, not its raw structure.
 
 ## Dataset at a Glance
 
 | Property      | Value                                                |
 | ------------- | ---------------------------------------------------- |
-| Period        | 2025-05-15 → 2025-09-15                              |
+| File          | `data/raw/water_quality_burgas_simulated_2025_2026.csv` |
+| Period        | 2025-05-15 → 2026-05-15                              |
 | Frequency     | 2 measurements per day (08:00 and 16:00 local time)  |
 | Locations     | Sarafovo, Central Beach Burgas, Kraimorie            |
-| Total rows    | 744                                                  |
+| Total rows    | 2196                                                 |
 | Nature        | Synthetic, but seasonally structured and correlated  |
 | Intended use  | Prototyping, visualization, correlation analysis, ML |
 

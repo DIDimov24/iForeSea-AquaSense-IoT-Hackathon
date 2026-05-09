@@ -181,13 +181,15 @@ Then open your browser at <http://localhost:3000>. The frontend will fetch bloom
 
 ### Dataset
 
-The repo ships with a simulated dataset for Burgas Bay (`data/`):
+The repo ships with a simulated dataset for Burgas Bay at `data/raw/water_quality_burgas_simulated_2025_2026.csv`:
 
-- **Period:** 2025-05-15 → 2025-09-15
+- **Period:** 2025-05-15 → 2026-05-15 (full year)
 - **Frequency:** 2 measurements/day (08:00, 16:00)
 - **Locations:** Sarafovo, Central Beach Burgas, Kraimorie
-- **Rows:** 744
-- **Columns:** timestamp, location, lat/lon, temperature (°C), NO₃ (mg/L), PO₄ (mg/L), turbidity (NTU), chlorophyll-a (µg/L)
+- **Rows:** 2196
+- **Columns:** timestamp, measurement_session, location_id, location_name_bg, lat/lon, temperature (°C), NO₃ (mg/L), PO₄ (mg/L), turbidity (NTU), chlorophyll-a (µg/L)
+
+See [`data/raw/README.md`](./data/raw/README.md) for full column reference and risk-class thresholds.
 
 The data is synthetic but seasonally structured and correlated, suitable for prototyping, visualization, correlation analysis, and ML experimentation.
 
