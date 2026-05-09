@@ -21,12 +21,7 @@ out/
 *.tsbuildinfo
 next-env.d.ts
 
-ml/models/*.pkl
 ml/models/*.joblib
-data/processed/
-
-!data/raw/water_quality_burgas_simulated.csv
-!data/samples/*.csv
 
 .env
 .env.local

@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bloom-ml"
+version = "0.1.0"
+description = "ML training + shared feature engineering for iForeSea bloom forecaster."
+requires-python = ">=3.11"
+dependencies = [
+    "pandas>=2.2",
+    "numpy>=1.26",
+    "scikit-learn>=1.4",
+    "xgboost>=2.0",
+    "joblib>=1.3",
+]
+
+[project.scripts]
+bloom-train = "bloom_ml.train:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

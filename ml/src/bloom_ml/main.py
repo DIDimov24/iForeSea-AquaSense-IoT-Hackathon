@@ -1,5 +1,4 @@
-def main():
-    print("Hello")
+from bloom_ml.train import main
 
 
 if __name__ == "__main__":
