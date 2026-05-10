@@ -154,12 +154,19 @@ python -m venv .venv
 pip install -e .
 ```
 
-Install the **ML** dependencies (used to train / run the bloom model):
+Install the **ML** package (used to train / run the bloom model):
 
 ```bash
 cd ml
-pip install pandas scikit-learn numpy
+python -m venv .venv
+# Windows
+.venv\Scripts\activate
+# macOS / Linux
+# source .venv/bin/activate
+pip install -e .
 ```
+
+This installs the `bloom-ml` package (pandas, scikit-learn, joblib; XGBoost optional) and registers the `bloom-train` console script.
 
 ### Usage
 
@@ -169,6 +176,22 @@ Start the **backend API** (port 8000):
 cd api
 uvicorn api.main:app --reload --port 8000
 ```
+
+Train the **ML model** (optional — pretrained artifacts already in `ml/models/`):
+
+```bash
+cd ml
+# venv activated, package installed (see Installation)
+bloom-train
+# or: python -m bloom_ml.train
+```
+
+Reads `data/water_quality_burgas_simulated_2025_2026.csv`. Trains RandomForest baseline + XGBoost (if installed), keeps lower-MAE model. Writes:
+
+- `ml/models/bloom_forecaster.pkl`
+- `ml/models/feature_columns.pkl`
+
+API loads these at startup. Re-run `bloom-train` after dataset or feature changes.
 
 Start the **web app** (port 3000):
 
@@ -181,7 +204,7 @@ Then open your browser at <http://localhost:3000>. The frontend will fetch bloom
 
 ### Dataset
 
-The repo ships with a simulated dataset for Burgas Bay at `data/raw/water_quality_burgas_simulated_2025_2026.csv`:
+The repo ships with a simulated dataset for Burgas Bay at `data/water_quality_burgas_simulated_2025_2026.csv`:
 
 - **Period:** 2025-05-15 → 2026-05-15 (full year)
 - **Frequency:** 2 measurements/day (08:00, 16:00)
