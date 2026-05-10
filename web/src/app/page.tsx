@@ -1,4 +1,3 @@
-import { Suspense } from 'react';
 import { ForecastTimeline, RiskStrip } from '@/components/sections';
 import type { RiskStripItem } from '@/components/sections/risk-strip';
 import type { TimelineBeach } from '@/components/sections/forecast-timeline';
@@ -51,7 +50,7 @@ function buildItems(
   return { strip, timeline };
 }
 
-async function HomeData() {
+export default async function HomePage() {
   const [risk, ...readingsList] = await Promise.all([
     getRiskAll(),
     ...PILOT_IDS.map((id) => getReadings(id, 14).catch(() => [] as Reading[])),
@@ -61,34 +60,7 @@ async function HomeData() {
     PILOT_IDS.map((id, i) => [id, readingsList[i]]),
   );
   const { strip, timeline } = buildItems(predictions, readings);
-  return (
-    <>
-      <RiskStrip items={strip} asOfDate={risk.as_of_date} />
-      <ForecastTimeline beaches={timeline} />
-    </>
-  );
-}
 
-function LoadingSkeleton() {
-  return (
-    <div className="px-6 py-12 md:px-12">
-      <div className="mx-auto max-w-6xl">
-        <div className="text-mono text-xs text-muted-foreground">Loading live readings…</div>
-        <div className="mt-6 grid gap-5 md:grid-cols-3">
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className="glass h-56 animate-pulse rounded-3xl bg-muted/30"
-              aria-hidden
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default function HomePage() {
   return (
     <>
       <section className="relative px-6 pt-10 pb-4 md:px-12">
@@ -106,9 +78,8 @@ export default function HomePage() {
           </p>
         </div>
       </section>
-      <Suspense fallback={<LoadingSkeleton />}>
-        <HomeData />
-      </Suspense>
+      <RiskStrip items={strip} asOfDate={risk.as_of_date} />
+      <ForecastTimeline beaches={timeline} />
     </>
   );
 }

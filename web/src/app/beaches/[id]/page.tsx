@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { Suspense } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { ForecastTimeline, RiskStrip } from '@/components/sections';
 import type { RiskStripItem } from '@/components/sections/risk-strip';
@@ -36,7 +35,10 @@ export async function generateMetadata({ params }: { params: Promise<Params> }) 
   return { title: name ? `${name} | iForeSea` : 'Beach | iForeSea' };
 }
 
-async function BeachData({ id }: { id: LocationId }) {
+export default async function BeachPage({ params }: { params: Promise<Params> }) {
+  const { id } = await params;
+  if (!isLocationId(id)) notFound();
+
   const [location, risk, readings] = await Promise.all([
     getLocation(id).catch(() => null),
     getRisk(id).catch(() => null),
@@ -129,27 +131,5 @@ async function BeachData({ id }: { id: LocationId }) {
       <RiskStrip items={[stripItem]} heading={false} />
       {timeline.length > 0 && <ForecastTimeline beaches={timeline} heading={false} />}
     </>
-  );
-}
-
-function BeachLoading() {
-  return (
-    <div className="px-6 py-12 md:px-12">
-      <div className="mx-auto max-w-6xl">
-        <div className="text-mono text-xs text-muted-foreground">Loading beach…</div>
-        <div className="mt-6 h-56 animate-pulse rounded-3xl bg-muted/30" aria-hidden />
-      </div>
-    </div>
-  );
-}
-
-export default async function BeachPage({ params }: { params: Promise<Params> }) {
-  const { id } = await params;
-  if (!isLocationId(id)) notFound();
-
-  return (
-    <Suspense fallback={<BeachLoading />}>
-      <BeachData id={id} />
-    </Suspense>
   );
 }
