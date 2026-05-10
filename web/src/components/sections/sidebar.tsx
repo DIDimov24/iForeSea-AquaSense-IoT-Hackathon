@@ -28,10 +28,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <aside className="flex h-full w-full flex-col border-r border-border bg-card">
       <div className="flex h-14 items-center gap-2.5 border-b border-border px-5">
-        <div className="relative h-6 w-6">
-          <div className="absolute inset-0 rounded-full border border-primary" />
-          <div className="absolute inset-1.5 rounded-full bg-primary" />
-        </div>
+        <img src="/logoaquasense.png" alt="AquaSense logo" className="h-6 w-6 object-contain" />
         <span className="text-mono text-sm tracking-[0.12em] text-foreground">
           iForeSea
         </span>
