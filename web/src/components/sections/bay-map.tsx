@@ -1,23 +1,70 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { BEACHES, classify, riskColor, riskLabel } from '@/lib/risk';
+import type { Location, Reading, RiskPrediction } from '@/lib/api';
+import { getReadings } from '@/lib/api';
+import { riskColor, riskLabel } from '@/lib/risk';
 
 const PINS: Record<string, { x: number; y: number }> = {
   sarafovo: { x: 32, y: 22 },
-  central: { x: 48, y: 50 },
+  central_beach_burgas: { x: 48, y: 50 },
   kraimorie: { x: 68, y: 78 },
 };
 
-export function BayMap() {
-  const [active, setActive] = useState<string | null>('central');
-  const beach = BEACHES.find((b) => b.id === active) ?? null;
+type Props = {
+  locations: Location[];
+  risk: Record<string, RiskPrediction | undefined>;
+};
+
+export function BayMap({ locations, risk }: Props) {
+  const initialId =
+    locations.find((l) => l.location_id === 'central_beach_burgas')?.location_id ??
+    locations[0]?.location_id ??
+    null;
+  const [active, setActive] = useState<string | null>(initialId);
+  const [latest, setLatest] = useState<Reading | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!active) return;
+    const ctrl = new AbortController();
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (cancelled) return;
+      setLoading(true);
+      setError(null);
+      setLatest(null);
+    });
+    getReadings(active, 1, { signal: ctrl.signal })
+      .then((rows) => {
+        if (cancelled) return;
+        setLatest(rows.at(-1) ?? null);
+      })
+      .catch((e: unknown) => {
+        if (cancelled) return;
+        if ((e as { name?: string })?.name === 'AbortError') return;
+        setError(e instanceof Error ? e.message : 'Failed to load readings');
+        setLatest(null);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+      ctrl.abort();
+    };
+  }, [active]);
+
+  const beach = locations.find((l) => l.location_id === active) ?? null;
+  const beachRisk = beach ? risk[beach.location_id] : undefined;
+  const color = beachRisk ? riskColor(beachRisk.risk_class) : 'var(--muted-foreground)';
 
   return (
     <section id="bay" className="relative px-6 py-10 md:px-12 md:py-14">
@@ -48,13 +95,7 @@ export function BayMap() {
                     height="6"
                     patternUnits="userSpaceOnUse"
                   >
-                    <circle
-                      cx="3"
-                      cy="3"
-                      r="0.4"
-                      fill="var(--primary)"
-                      fillOpacity="0.18"
-                    />
+                    <circle cx="3" cy="3" r="0.4" fill="var(--primary)" fillOpacity="0.18" />
                   </pattern>
                 </defs>
                 <rect width="100" height="100" fill="url(#water)" />
@@ -73,23 +114,18 @@ export function BayMap() {
                   strokeWidth="0.3"
                 />
 
-                {BEACHES.map((b) => {
-                  const p = PINS[b.id];
-                  const color = riskColor(classify(b.chl));
-                  const isActive = active === b.id;
+                {locations.map((loc) => {
+                  const p = PINS[loc.location_id] ?? { x: 50, y: 50 };
+                  const r = risk[loc.location_id];
+                  const c = r ? riskColor(r.risk_class) : 'var(--muted-foreground)';
+                  const isActive = active === loc.location_id;
                   return (
                     <g
-                      key={b.id}
-                      onClick={() => setActive(b.id)}
+                      key={loc.location_id}
+                      onClick={() => setActive(loc.location_id)}
                       className="cursor-pointer"
                     >
-                      <circle
-                        cx={p.x}
-                        cy={p.y}
-                        r={isActive ? 6 : 4}
-                        fill={color}
-                        opacity="0.18"
-                      >
+                      <circle cx={p.x} cy={p.y} r={isActive ? 6 : 4} fill={c} opacity="0.18">
                         <animate
                           attributeName="r"
                           values={`${isActive ? 6 : 4};${isActive ? 12 : 9};${isActive ? 6 : 4}`}
@@ -103,16 +139,16 @@ export function BayMap() {
                           repeatCount="indefinite"
                         />
                       </circle>
-                      <circle cx={p.x} cy={p.y} r="1.4" fill={color} />
+                      <circle cx={p.x} cy={p.y} r="1.4" fill={c} />
                       <text
                         x={p.x + 3}
                         y={p.y + 1}
                         fontSize="2.4"
-                        fill={isActive ? color : 'var(--foreground)'}
+                        fill={isActive ? c : 'var(--foreground)'}
                         fillOpacity={isActive ? 1 : 0.7}
                         className="text-mono uppercase"
                       >
-                        {b.name}
+                        {loc.name_en}
                       </text>
                     </g>
                   );
@@ -126,31 +162,48 @@ export function BayMap() {
                   <div className="text-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                     Sensor station
                   </div>
-                  <h3 className="mt-2 text-2xl font-medium text-foreground">{beach.name}</h3>
-                  <Badge
-                    variant="outline"
-                    className="text-mono mt-1 border-transparent bg-transparent px-0 text-xs uppercase tracking-widest"
-                    style={{ color: riskColor(classify(beach.chl)) }}
-                  >
-                    {riskLabel(classify(beach.chl))}
-                  </Badge>
+                  <h3 className="mt-2 text-2xl font-medium text-foreground">{beach.name_en}</h3>
+                  {beachRisk && (
+                    <Badge
+                      variant="outline"
+                      className="text-mono mt-1 border-transparent bg-transparent px-0 text-xs uppercase tracking-widest"
+                      style={{ color }}
+                    >
+                      {riskLabel(beachRisk.risk_class)} ·{' '}
+                      {beachRisk.predicted_chlorophyll_ug_l.toFixed(1)} µg/L T+3..T+5
+                    </Badge>
+                  )}
 
                   <dl className="mt-6 text-sm">
-                    {[
-                      { k: 'Chl-a', v: `${beach.chl.toFixed(1)} µg/L` },
-                      { k: 'Sea temp', v: '21.4 °C' },
-                      { k: 'Salinity', v: '17.8 PSU' },
-                      { k: 'Nitrate', v: '0.42 mg/L' },
-                      { k: 'Wind', v: 'NE 3.2 m/s' },
-                    ].map((row, i, arr) => (
-                      <div key={row.k}>
-                        <div className="flex justify-between py-2">
-                          <dt className="text-muted-foreground">{row.k}</dt>
-                          <dd className="text-mono text-foreground">{row.v}</dd>
-                        </div>
-                        {i < arr.length - 1 && <Separator />}
+                    {error && (
+                      <div className="text-mono text-xs text-[var(--bloom)]">
+                        Readings unavailable. {error}
                       </div>
-                    ))}
+                    )}
+                    {loading && !latest && (
+                      <div className="text-mono text-xs text-muted-foreground">Loading…</div>
+                    )}
+                    {latest &&
+                      [
+                        { k: 'Chl-a', v: `${latest.chlorophyll_a_ug_l.toFixed(2)} µg/L` },
+                        { k: 'Sea temp', v: `${latest.temperature_c.toFixed(1)} °C` },
+                        { k: 'Nitrate', v: `${latest.nitrate_no3_mg_l.toFixed(2)} mg/L` },
+                        { k: 'Phosphate', v: `${latest.phosphate_po4_mg_l.toFixed(2)} mg/L` },
+                        { k: 'Turbidity', v: `${latest.turbidity_ntu.toFixed(1)} NTU` },
+                      ].map((row, i, arr) => (
+                        <div key={row.k}>
+                          <div className="flex justify-between py-2">
+                            <dt className="text-muted-foreground">{row.k}</dt>
+                            <dd className="text-mono text-foreground">{row.v}</dd>
+                          </div>
+                          {i < arr.length - 1 && <Separator />}
+                        </div>
+                      ))}
+                    {latest && (
+                      <div className="text-mono mt-3 text-[10px] uppercase tracking-widest text-muted-foreground">
+                        reading {latest.date}
+                      </div>
+                    )}
                   </dl>
 
                   <Button
@@ -159,12 +212,11 @@ export function BayMap() {
                     nativeButton={false}
                     className="text-mono mt-8 rounded-full border-primary/40 bg-[color-mix(in_oklab,var(--primary)_8%,transparent)] text-xs uppercase tracking-widest text-foreground hover:border-primary/70 hover:bg-[color-mix(in_oklab,var(--primary)_18%,transparent)]"
                     render={
-                      <Link href={`/beaches/${beach.id}`}>
+                      <Link href={`/beaches/${beach.location_id}`}>
                         Open beach <ArrowRight />
                       </Link>
                     }
                   />
-
                 </div>
               ) : (
                 <p className="text-sm text-muted-foreground">Pick a pin.</p>

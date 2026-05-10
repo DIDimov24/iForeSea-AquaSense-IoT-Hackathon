@@ -1,15 +1,26 @@
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
-import { BEACHES, classify, riskColor, riskLabel } from '@/lib/risk';
+import type { RiskClass } from '@/lib/api';
+import { riskColor, riskLabel } from '@/lib/risk';
+
+export type RiskStripItem = {
+  id: string;
+  name: string;
+  chl: number;
+  risk: RiskClass;
+  trend: number | null;
+  history: number[];
+};
 
 function Sparkline({ data, color }: { data: number[]; color: string }) {
-  const min = Math.min(...data);
-  const max = Math.max(...data);
+  const safe = data.length >= 2 ? data : [...data, ...data];
+  const min = Math.min(...safe);
+  const max = Math.max(...safe);
   const w = 200;
   const h = 40;
-  const step = w / (data.length - 1);
-  const pts = data.map((v, i) => {
+  const step = w / (safe.length - 1);
+  const pts = safe.map((v, i) => {
     const x = i * step;
     const y = h - ((v - min) / (max - min || 1)) * h;
     return `${x},${y}`;
@@ -37,13 +48,13 @@ function Sparkline({ data, color }: { data: number[]; color: string }) {
 }
 
 type Props = {
-  locationId?: 'sarafovo' | 'central' | 'kraimorie';
+  items: RiskStripItem[];
   heading?: boolean;
+  asOfDate?: string;
 };
 
-export function RiskStrip({ locationId, heading = true }: Props) {
-  const beaches = locationId ? BEACHES.filter((b) => b.id === locationId) : BEACHES;
-  const single = beaches.length === 1;
+export function RiskStrip({ items, heading = true, asOfDate }: Props) {
+  const single = items.length === 1;
 
   return (
     <section id="beaches" className="relative px-6 py-6 md:px-12 md:py-8">
@@ -57,7 +68,7 @@ export function RiskStrip({ locationId, heading = true }: Props) {
               <h2 className="mt-3 text-3xl font-medium tracking-tight text-foreground md:text-5xl">
                 {single ? (
                   <>
-                    {beaches[0].name}.{' '}
+                    {items[0].name}.{' '}
                     <span className="text-muted-foreground">Right now.</span>
                   </>
                 ) : (
@@ -68,17 +79,18 @@ export function RiskStrip({ locationId, heading = true }: Props) {
                 )}
               </h2>
             </div>
-            <div className="text-mono hidden text-xs text-muted-foreground md:block">
-              updated 04:12 ago
-            </div>
+            {asOfDate && (
+              <div className="text-mono hidden text-xs text-muted-foreground md:block">
+                as of {asOfDate}
+              </div>
+            )}
           </div>
         )}
 
         <div className={`grid gap-5 ${single ? '' : 'md:grid-cols-3'}`}>
-          {beaches.map((b) => {
-            const cls = classify(b.chl);
-            const color = riskColor(cls);
-            const trendUp = b.trend > 0;
+          {items.map((b) => {
+            const color = riskColor(b.risk);
+            const trendUp = b.trend !== null && b.trend > 0;
             const CardEl = (
               <Card
                 className={`glass group relative overflow-hidden rounded-3xl bg-transparent p-6 transition ${
@@ -109,7 +121,7 @@ export function RiskStrip({ locationId, heading = true }: Props) {
                     className="text-mono border-transparent bg-transparent px-0 text-[10px] uppercase tracking-widest"
                     style={{ color }}
                   >
-                    {riskLabel(cls)}
+                    {riskLabel(b.risk)}
                   </Badge>
                 </div>
 
@@ -119,25 +131,28 @@ export function RiskStrip({ locationId, heading = true }: Props) {
                   <span className="text-mono text-5xl font-light" style={{ color }}>
                     {b.chl.toFixed(1)}
                   </span>
-                  <span className="text-mono text-xs text-muted-foreground">µg/L chl-a</span>
+                  <span className="text-mono text-xs text-muted-foreground">µg/L chl-a (T+3..T+5)</span>
                 </div>
 
-                <div className="text-mono relative mt-2 flex items-center gap-2 text-xs">
-                  <span style={{ color }}>{trendUp ? '▲' : '▼'}</span>
-                  <span className="text-muted-foreground">
-                    {trendUp ? '+' : ''}
-                    {b.trend.toFixed(1)} over 24h
-                  </span>
-                </div>
-
-                <div className="relative mt-6">
-                  <Sparkline data={b.forecast} color={color} />
-                  <div className="text-mono mt-2 flex justify-between text-[10px] text-muted-foreground">
-                    <span>T+0</span>
-                    <span>T+3</span>
-                    <span>T+5</span>
+                {b.trend !== null && (
+                  <div className="text-mono relative mt-2 flex items-center gap-2 text-xs">
+                    <span style={{ color }}>{trendUp ? '▲' : '▼'}</span>
+                    <span className="text-muted-foreground">
+                      {trendUp ? '+' : ''}
+                      {b.trend.toFixed(1)} over recent week
+                    </span>
                   </div>
-                </div>
+                )}
+
+                {b.history.length > 0 && (
+                  <div className="relative mt-6">
+                    <Sparkline data={b.history} color={color} />
+                    <div className="text-mono mt-2 flex justify-between text-[10px] text-muted-foreground">
+                      <span>T-{b.history.length - 1}d</span>
+                      <span>today</span>
+                    </div>
+                  </div>
+                )}
               </Card>
             );
             return single ? (

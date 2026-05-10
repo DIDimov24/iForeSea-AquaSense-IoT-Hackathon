@@ -1,6 +1,46 @@
+import { Suspense } from 'react';
 import { BayMap } from '@/components/sections';
+import { getLocations, getRiskAll, type RiskPrediction } from '@/lib/api';
 
 export const metadata = { title: 'Map · AquaSense' };
+
+async function MapData() {
+  const [locations, risk] = await Promise.all([
+    getLocations().catch(() => []),
+    getRiskAll().catch(() => null),
+  ]);
+  const riskMap: Record<string, RiskPrediction | undefined> = {};
+  if (risk) {
+    for (const item of risk.items) {
+      riskMap[item.location_id] = item;
+    }
+  }
+
+  if (locations.length === 0) {
+    return (
+      <section className="px-6 py-16 md:px-12">
+        <div className="mx-auto max-w-6xl">
+          <div className="text-mono text-xs text-bloom">
+            Could not load locations from API.
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  return <BayMap locations={locations} risk={riskMap} />;
+}
+
+function MapLoading() {
+  return (
+    <div className="px-6 py-12 md:px-12">
+      <div className="mx-auto max-w-6xl">
+        <div className="text-mono text-xs text-muted-foreground">Loading bay…</div>
+        <div className="mt-6 aspect-4/3 animate-pulse rounded-3xl bg-muted/30" aria-hidden />
+      </div>
+    </div>
+  );
+}
 
 export default function MapPage() {
   return (
@@ -16,7 +56,9 @@ export default function MapPage() {
           </p>
         </div>
       </section>
-      <BayMap />
+      <Suspense fallback={<MapLoading />}>
+        <MapData />
+      </Suspense>
     </>
   );
 }

@@ -13,7 +13,7 @@ const NAV: ReadonlyArray<{ href: string; label: string; icon: LucideIcon }> = [
 
 const BEACHES = [
   { id: 'sarafovo', label: 'Sarafovo' },
-  { id: 'central', label: 'Central' },
+  { id: 'central_beach_burgas', label: 'Central' },
   { id: 'kraimorie', label: 'Kraimorie' },
 ] as const;
 

@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { Menu } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
+import { SHORT_NAMES, getHealth, getRiskAll } from '@/lib/api';
 import { Sidebar } from './sidebar';
 
 const TITLES: Record<string, { eyebrow: string; title: string }> = {
@@ -19,7 +20,8 @@ const TITLES: Record<string, { eyebrow: string; title: string }> = {
 function resolveTitle(pathname: string) {
   if (pathname.startsWith('/beaches/')) {
     const id = pathname.split('/')[2] ?? '';
-    return { eyebrow: 'Beach', title: id.charAt(0).toUpperCase() + id.slice(1) };
+    const label = SHORT_NAMES[id as keyof typeof SHORT_NAMES] ?? id;
+    return { eyebrow: 'Beach', title: label };
   }
   return TITLES[pathname] ?? { eyebrow: '', title: '' };
 }
@@ -28,6 +30,34 @@ export function Topbar() {
   const pathname = usePathname() ?? '/';
   const { eyebrow, title } = resolveTitle(pathname);
   const [open, setOpen] = useState(false);
+  const [asOf, setAsOf] = useState<string | null>(null);
+  const [online, setOnline] = useState<'unknown' | 'online' | 'offline'>('unknown');
+
+  useEffect(() => {
+    const ctrl = new AbortController();
+    Promise.all([
+      getRiskAll({ signal: ctrl.signal }).catch(() => null),
+      getHealth({ signal: ctrl.signal }).catch(() => null),
+    ]).then(([risk, health]) => {
+      if (ctrl.signal.aborted) return;
+      setAsOf(risk?.as_of_date ?? null);
+      setOnline(health?.status === 'ok' ? 'online' : 'offline');
+    });
+    return () => ctrl.abort();
+  }, []);
+
+  const statusDot =
+    online === 'online'
+      ? 'bg-[var(--chl)]'
+      : online === 'offline'
+      ? 'bg-[var(--bloom)]'
+      : 'bg-muted-foreground';
+  const statusLabel =
+    online === 'online'
+      ? 'API online'
+      : online === 'offline'
+      ? 'API offline'
+      : 'Checking…';
 
   return (
     <>
@@ -57,12 +87,14 @@ export function Topbar() {
             variant="outline"
             className="text-mono hidden bg-background text-[11px] text-muted-foreground sm:inline-flex"
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-[var(--chl)] ring-pulse" />
-            All sensors online
+            <span className={`h-1.5 w-1.5 rounded-full ring-pulse ${statusDot}`} />
+            {statusLabel}
           </Badge>
-          <div className="text-mono hidden text-[11px] text-muted-foreground lg:block">
-            Burgas Bay · updated 04:12 ago
-          </div>
+          {asOf && (
+            <div className="text-mono hidden text-[11px] text-muted-foreground lg:block">
+              Burgas Bay · as of {asOf}
+            </div>
+          )}
           <ThemeToggle />
         </div>
       </header>
