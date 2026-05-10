@@ -25,7 +25,7 @@ export default function RootLayout({
       <body>
         <ThemeProvider attribute="class" enableSystem={false}>
           <div className="flex h-screen w-full overflow-hidden">
-            <div className="hidden w-[240px] shrink-0 md:block">
+            <div className="hidden w-[280px] shrink-0 md:block">
               <Sidebar />
             </div>
             <div className="flex min-w-0 flex-1 flex-col">

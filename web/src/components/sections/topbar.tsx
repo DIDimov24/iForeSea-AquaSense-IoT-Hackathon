@@ -61,7 +61,7 @@ export function Topbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-4 border-b border-border bg-card/80 px-4 backdrop-blur-md md:px-6">
+      <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b border-border bg-card/80 px-4 backdrop-blur-md md:px-6">
         <div className="flex min-w-0 items-center gap-3">
           <Button
             type="button"
@@ -75,23 +75,23 @@ export function Topbar() {
             <Menu />
           </Button>
           <div className="min-w-0">
-            <div className="text-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+            <div className="text-mono text-sm uppercase tracking-widest text-muted-foreground">
               {eyebrow}
             </div>
-            <div className="truncate text-sm font-medium text-foreground">{title}</div>
+            <div className="truncate text-xl font-medium text-foreground">{title}</div>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
           <Badge
             variant="outline"
-            className="text-mono hidden bg-background text-[11px] text-muted-foreground sm:inline-flex"
+            className="text-mono hidden bg-background text-sm text-muted-foreground sm:inline-flex"
           >
             <span className={`h-1.5 w-1.5 rounded-full ring-pulse ${statusDot}`} />
             {statusLabel}
           </Badge>
           {asOf && (
-            <div className="text-mono hidden text-[11px] text-muted-foreground lg:block">
+            <div className="text-mono hidden text-sm text-muted-foreground lg:block">
               Burgas Bay · as of {asOf}
             </div>
           )}
