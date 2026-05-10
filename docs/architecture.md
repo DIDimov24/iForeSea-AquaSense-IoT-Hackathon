@@ -53,11 +53,11 @@ This horizon is the core promise of the system: it gives citizens and institutio
 
 The regressor outputs a chlorophyll-a value in µg/L. A pure (deterministic) function maps that number to one of three classes shown on the map:
 
-| Class     | Chlorophyll-a (µg/L) | Meaning        |
-| --------- | -------------------- | -------------- |
-| 🟢 green  | `< 5`                | Low bloom risk |
-| 🟡 yellow | `>= 5` and `< 12`    | Moderate risk  |
-| 🔴 red    | `>= 12`              | High risk      |
+| Class     | Chlorophyll-a (µg/L) | Meaning                                            |
+| --------- | -------------------- | -------------------------------------------------- |
+| 🟢 green  | `<= 10`              | Good ecological condition / low bloom risk         |
+| 🟡 yellow | `> 10` and `<= 22`   | Moderate eutrophication risk                       |
+| 🔴 red    | `> 22`               | High bloom risk / possible HAB conditions          |
 
 Because the mapping is a pure function, the same predicted value always yields the same class - making results easy to interpret and reproduce.
 

@@ -16,18 +16,23 @@ export function Methodology() {
 
         <div className="grid gap-6 md:grid-cols-3">
           {[
-            { c: 'var(--chl)', l: 'Safe', r: '< 5 µg/L', d: 'Open beach. No restrictions.' },
+            {
+              c: 'var(--chl)',
+              l: 'Safe',
+              r: '≤ 10 µg/L',
+              d: 'Good ecological condition. Low bloom risk; no restrictions.',
+            },
             {
               c: 'var(--warn)',
               l: 'Caution',
-              r: '5 — 12 µg/L',
-              d: 'Elevated chl-a. Monitor closely; avoid prolonged exposure for sensitive groups.',
+              r: '10 — 22 µg/L',
+              d: 'Moderate eutrophication risk. Monitor closely; avoid prolonged exposure for sensitive groups.',
             },
             {
               c: 'var(--bloom)',
               l: 'Avoid',
-              r: '≥ 12 µg/L',
-              d: 'Bloom likely. Public health advisory; close to swimming.',
+              r: '> 22 µg/L',
+              d: 'High bloom risk; possible HAB conditions. Public health advisory; close to swimming.',
             },
           ].map((row) => (
             <Card key={row.l} className="glass rounded-3xl bg-transparent p-8">

@@ -39,8 +39,8 @@ This document describes the columns of the simulated Burgas Bay water-quality da
 - `chlorophyll_a_ug_l` is the model's **target variable**. The forecasting task is the maximum chlorophyll-a expected 3-5 days ahead (see [`architecture.md`](./architecture.md)).
 - Risk thresholds applied on top of the predicted chlorophyll value:
 
-  | Class    | Range (µg/L)        |
-  | -------- | ------------------- |
-  | 🟢 green  | `< 5`               |
-  | 🟡 yellow | `>= 5` and `< 12`   |
-  | 🔴 red    | `>= 12`             |
+  | Class     | Range (µg/L)        | Meaning                                            |
+  | --------- | ------------------- | -------------------------------------------------- |
+  | 🟢 green  | `<= 10`             | Good ecological condition / low bloom risk         |
+  | 🟡 yellow | `> 10` and `<= 22`  | Moderate eutrophication risk                       |
+  | 🔴 red    | `> 22`              | High bloom risk / possible HAB conditions          |

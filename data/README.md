@@ -33,11 +33,11 @@ Synthetic water-quality dataset for Burgas Bay, used for prototyping the iForeSe
 
 Traffic-light status derived from `chlorophyll_a_ug_l`:
 
-| Class  | Color  | Threshold (µg/L) |
-| ------ | ------ | ---------------- |
-| Good   | Green  | `< 5`            |
-| Moderate | Yellow | `5 .. < 12`    |
-| Bloom Risk | Red | `>= 12`         |
+| Class                                          | Color  | Threshold (µg/L)   |
+| ---------------------------------------------- | ------ | ------------------ |
+| Good ecological condition / low bloom risk     | Green  | `<= 10`            |
+| Moderate eutrophication risk                   | Yellow | `> 10` and `<= 22` |
+| High bloom risk / possible HAB conditions      | Red    | `> 22`             |
 
 Mapping is a pure function — keep identical between ML and frontend.
 

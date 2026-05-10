@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -11,6 +12,8 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import Logo from '@/assets/iforesea_logo.png';
+import { getRiskAll, type RiskClass } from '@/lib/api';
+import { riskColor } from '@/lib/risk';
 
 const NAV: ReadonlyArray<{ href: string; label: string; icon: LucideIcon }> = [
   { href: '/', label: 'Home', icon: LayoutGrid },
@@ -32,6 +35,19 @@ function isActive(pathname: string, href: string) {
 
 export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname() ?? '/';
+  const [risks, setRisks] = useState<Record<string, RiskClass>>({});
+
+  useEffect(() => {
+    const ac = new AbortController();
+    getRiskAll({ signal: ac.signal })
+      .then((res) => {
+        const map: Record<string, RiskClass> = {};
+        for (const item of res.items) map[item.location_id] = item.risk_class;
+        setRisks(map);
+      })
+      .catch(() => {});
+    return () => ac.abort();
+  }, []);
 
   return (
     <aside className="flex h-full w-full flex-col border-r border-border bg-card">
@@ -82,6 +98,8 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
           {BEACHES.map(b => {
             const href = `/beaches/${b.id}`;
             const active = pathname === href;
+            const risk = risks[b.id];
+            const dotColor = risk ? riskColor(risk) : undefined;
             return (
               <li key={b.id}>
                 <Link
@@ -95,7 +113,18 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                   ].join(' ')}
                   aria-current={active ? 'page' : undefined}
                 >
-                  <span className="h-2 w-2 rounded-full bg-primary" aria-hidden />
+                  <span
+                    className={[
+                      'h-2 w-2 rounded-full',
+                      dotColor ? '' : 'bg-muted-foreground/40',
+                    ].join(' ')}
+                    style={
+                      dotColor
+                        ? { background: dotColor, boxShadow: `0 0 8px ${dotColor}` }
+                        : undefined
+                    }
+                    aria-label={risk ? `Risk: ${risk}` : 'Risk: unknown'}
+                  />
                   <span>{b.label}</span>
                 </Link>
               </li>

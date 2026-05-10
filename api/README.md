@@ -52,11 +52,11 @@ features, and dataset keys.
 
 Defined in `bloom_ml.features.to_risk_class`:
 
-| Class    | Predicted chlorophyll-a (µg/L) |
-| -------- | ------------------------------ |
-| `green`  | `< 5`                          |
-| `yellow` | `>= 5` and `< 12`              |
-| `red`    | `>= 12`                        |
+| Class    | Predicted chlorophyll-a (µg/L) | Meaning                                              |
+| -------- | ------------------------------ | ---------------------------------------------------- |
+| `green`  | `<= 10`                        | Good ecological condition / low bloom risk           |
+| `yellow` | `> 10` and `<= 22`             | Moderate eutrophication risk                         |
+| `red`    | `> 22`                         | High bloom risk / possible HAB conditions            |
 
 ### `/risk/{location_id}` JSON shape
 
