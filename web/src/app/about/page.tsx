@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-export const metadata = { title: 'About · AquaSense' };
+export const metadata = { title: 'About | iForeSea' };
 
 export default function AboutPage() {
   return (
@@ -8,13 +8,13 @@ export default function AboutPage() {
       <div className="mx-auto max-w-6xl">
         <div className="text-mono text-xs uppercase tracking-widest text-primary">· About</div>
         <h2 className="mt-3 text-3xl font-medium tracking-tight text-foreground md:text-5xl">
-          Why AquaSense.
+          Why iForeSea.
         </h2>
         <div className="mt-8 max-w-3xl space-y-6 text-base leading-relaxed text-muted-foreground">
           <p>
             Burgas Bay sees recurring harmful algal blooms each summer. By the time municipal
             testing flags a beach as unsafe, swimmers have already been in the water for days.
-            AquaSense exists to push the verdict three to five days earlier.
+            iForeSea exists to push the verdict three to five days earlier.
           </p>
           <p>
             Inputs are buoy-mounted IoT sensors recording chlorophyll-a, temperature, salinity,

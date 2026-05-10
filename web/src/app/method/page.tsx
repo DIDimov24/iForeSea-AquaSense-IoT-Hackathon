@@ -1,6 +1,6 @@
 import { HowItWorks, Methodology } from '@/components/sections';
 
-export const metadata = { title: 'Method · AquaSense' };
+export const metadata = { title: 'Method | iForeSea' };
 
 export default function MethodPage() {
   return (

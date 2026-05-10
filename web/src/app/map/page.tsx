@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { BayMap } from '@/components/sections';
 import { getLocations, getRiskAll, type RiskPrediction } from '@/lib/api';
 
-export const metadata = { title: 'Map · AquaSense' };
+export const metadata = { title: 'Map | iForeSea' };
 
 async function MapData() {
   const [locations, risk] = await Promise.all([

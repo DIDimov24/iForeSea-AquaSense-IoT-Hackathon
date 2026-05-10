@@ -13,7 +13,7 @@ import {
 } from '@/lib/api';
 import { classify } from '@/lib/risk';
 
-export const metadata = { title: 'Home · AquaSense' };
+export const metadata = { title: 'Home | iForeSea' };
 
 function buildItems(
   predictions: Map<string, RiskPrediction>,

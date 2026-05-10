@@ -33,7 +33,7 @@ function isLocationId(id: string): id is LocationId {
 export async function generateMetadata({ params }: { params: Promise<Params> }) {
   const { id } = await params;
   const name = isLocationId(id) ? SHORT_NAMES[id] : null;
-  return { title: name ? `${name} · AquaSense` : 'Beach · AquaSense' };
+  return { title: name ? `${name} | iForeSea` : 'Beach | iForeSea' };
 }
 
 async function BeachData({ id }: { id: LocationId }) {
