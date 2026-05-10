@@ -1,6 +1,8 @@
+<div align="center">
+
 # iForeSea - AquaSense IoT Hackathon
 
-<!-- logo -->
+<img src="./docs/iforesea_logo.png" alt="iForeSea logo" width="200" />
 
 ![Status](https://img.shields.io/badge/status-active-brightgreen)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
@@ -20,6 +22,8 @@
 <a href="https://iforesea-aquasense-iot-hackathon.vercel.app/">
   <img src="https://img.shields.io/badge/View_Website-181717?style=for-the-badge&logo=vercel&logoColor=white" alt="View Website" />
 </a>
+
+</div>
 
 ## Table of Contents
 
