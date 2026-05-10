@@ -1,6 +1,10 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image, { type StaticImageData } from 'next/image';
 import { ArrowLeft } from 'lucide-react';
+import SarafovoImg from '@/assets/beaches/sarafovo.webp';
+import CentralImg from '@/assets/beaches/central.webp';
+import KraimorieImg from '@/assets/beaches/kraimorie.webp';
 import { ForecastTimeline, RiskStrip } from '@/components/sections';
 import type { RiskStripItem } from '@/components/sections/risk-strip';
 import type { TimelineBeach } from '@/components/sections/forecast-timeline';
@@ -20,6 +24,12 @@ import { riskColor, riskLabel } from '@/lib/risk';
 type Params = { id: string };
 
 const IDS = PILOT_IDS;
+
+const BEACH_IMAGES: Record<LocationId, StaticImageData> = {
+  sarafovo: SarafovoImg,
+  central_beach_burgas: CentralImg,
+  kraimorie: KraimorieImg,
+};
 
 export function generateStaticParams() {
   return IDS.map((id) => ({ id }));
@@ -61,6 +71,7 @@ export default async function BeachPage({ params }: { params: Promise<Params> })
   const histVals = readings.map((r) => r.chlorophyll_a_ug_l);
   const trend = histVals.length >= 2 ? histVals[histVals.length - 1] - histVals[0] : null;
 
+  const latestReading = readings.at(-1);
   const stripItem: RiskStripItem = {
     id,
     name,
@@ -68,6 +79,14 @@ export default async function BeachPage({ params }: { params: Promise<Params> })
     risk: risk?.risk_class ?? 'green',
     trend,
     history: histVals,
+    latest: latestReading
+      ? {
+          temperature_c: latestReading.temperature_c,
+          nitrate_no3_mg_l: latestReading.nitrate_no3_mg_l,
+          phosphate_po4_mg_l: latestReading.phosphate_po4_mg_l,
+          turbidity_ntu: latestReading.turbidity_ntu,
+        }
+      : undefined,
   };
 
   const timeline: TimelineBeach[] = risk
@@ -90,7 +109,25 @@ export default async function BeachPage({ params }: { params: Promise<Params> })
 
   return (
     <>
-      <section className="relative border-b border-border bg-card">
+      <section className="relative isolate min-h-[260px] overflow-hidden border-b border-border bg-card md:min-h-[360px]">
+        <Image
+          src={BEACH_IMAGES[id]}
+          alt={`${name} beach`}
+          placeholder="blur"
+          priority
+          fill
+          sizes="100vw"
+          className="absolute inset-0 -z-10 object-cover object-[center_40%]"
+        />
+        <div
+          aria-hidden
+          className="absolute inset-0 -z-10 bg-linear-to-t from-background via-background/70 to-background/10"
+        />
+        <div
+          aria-hidden
+          className="absolute inset-0 -z-10 bg-linear-to-r from-background/80 via-background/30 to-transparent"
+        />
+
         <div className="relative z-10 mx-auto max-w-6xl px-6 py-8 md:px-12 md:py-10">
           <Button
             variant="ghost"
@@ -103,11 +140,11 @@ export default async function BeachPage({ params }: { params: Promise<Params> })
               </Link>
             }
           />
-          <div className="mt-6">
+          <div className="mt-6 max-w-2xl">
             <div className="text-mono text-xs uppercase tracking-widest text-primary">
               · Beach · {id}
             </div>
-            <h1 className="mt-3 text-5xl font-medium tracking-tight text-foreground md:text-7xl">
+            <h1 className="mt-3 text-5xl font-medium tracking-tight text-foreground drop-shadow-sm md:text-7xl">
               {name}
             </h1>
             {risk && (

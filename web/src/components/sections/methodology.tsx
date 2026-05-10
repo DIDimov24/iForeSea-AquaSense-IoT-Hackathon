@@ -25,7 +25,7 @@ export function Methodology() {
             {
               c: 'var(--warn)',
               l: 'Caution',
-              r: '10 — 22 µg/L',
+              r: '10 - 22 µg/L',
               d: 'Moderate eutrophication risk. Monitor closely; avoid prolonged exposure for sensitive groups.',
             },
             {
@@ -34,7 +34,7 @@ export function Methodology() {
               r: '> 22 µg/L',
               d: 'High bloom risk; possible HAB conditions. Public health advisory; close to swimming.',
             },
-          ].map((row) => (
+          ].map(row => (
             <Card key={row.l} className="glass rounded-3xl bg-transparent p-8">
               <div className="flex items-center gap-3">
                 <span
@@ -61,7 +61,9 @@ export function Methodology() {
               <div className="text-mono text-xs uppercase tracking-widest text-muted-foreground">
                 Model card
               </div>
-              <div className="mt-3 text-2xl font-medium text-foreground">bloom-forecaster</div>
+              <div className="mt-3 text-2xl font-medium text-foreground">
+                bloom-forecaster
+              </div>
               <div className="text-mono mt-1 text-xs text-muted-foreground">
                 v0.1 · synthetic train set
               </div>
@@ -77,11 +79,15 @@ export function Methodology() {
               </div>
               <div>
                 <dt className="text-muted-foreground">Inputs</dt>
-                <dd className="text-mono mt-1 text-foreground">temp, salinity, NO₃, wind, lags</dd>
+                <dd className="text-mono mt-1 text-foreground">
+                  temp, NO₃, PO₄, turbidity, chl-a, lags
+                </dd>
               </div>
               <div>
                 <dt className="text-muted-foreground">Validation</dt>
-                <dd className="text-mono mt-1 text-foreground">time-series split, MAE 1.8 µg/L</dd>
+                <dd className="text-mono mt-1 text-foreground">
+                  time-series split, MAE 1.8 µg/L
+                </dd>
               </div>
             </dl>
           </div>

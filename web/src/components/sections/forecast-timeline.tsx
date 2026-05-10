@@ -16,7 +16,7 @@ export type TimelineBeach = {
 
 const PLOT_W = 360;
 const PLOT_H = 140;
-const Y_MAX = 18;
+const Y_MAX = 30;
 const PAD_L = 28;
 const PAD_R = 8;
 const PAD_T = 8;
@@ -25,6 +25,25 @@ const PAD_B = 22;
 function yToPx(v: number) {
   const inner = PLOT_H - PAD_T - PAD_B;
   return PAD_T + inner - (Math.min(v, Y_MAX) / Y_MAX) * inner;
+}
+
+function smoothPath(pts: ReadonlyArray<readonly [number, number]>): string {
+  if (pts.length === 0) return '';
+  if (pts.length === 1) return `M${pts[0][0]},${pts[0][1]}`;
+  const at = (i: number) => pts[Math.max(0, Math.min(pts.length - 1, i))];
+  let d = `M${pts[0][0]},${pts[0][1]}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const [x0, y0] = at(i - 1);
+    const [x1, y1] = at(i);
+    const [x2, y2] = at(i + 1);
+    const [x3, y3] = at(i + 2);
+    const c1x = x1 + (x2 - x0) / 6;
+    const c1y = y1 + (y2 - y0) / 6;
+    const c2x = x2 - (x3 - x1) / 6;
+    const c2y = y2 - (y3 - y1) / 6;
+    d += ` C${c1x.toFixed(2)},${c1y.toFixed(2)} ${c2x.toFixed(2)},${c2y.toFixed(2)} ${x2.toFixed(2)},${y2.toFixed(2)}`;
+  }
+  return d;
 }
 
 function HistoryForecastChart({ beach }: { beach: TimelineBeach }) {
@@ -39,7 +58,9 @@ function HistoryForecastChart({ beach }: { beach: TimelineBeach }) {
 
   const histX = (i: number) => PAD_L + i * dayStep;
 
-  const histPts = history.map((r, i) => `${histX(i)},${yToPx(r.chl)}`);
+  const histPoints: Array<readonly [number, number]> = history.map(
+    (r, i) => [histX(i), yToPx(r.chl)] as const,
+  );
   const lastHistX = histX(histDays - 1);
   const lastHistY = yToPx(history[histDays - 1]?.chl ?? 0);
 
@@ -47,10 +68,20 @@ function HistoryForecastChart({ beach }: { beach: TimelineBeach }) {
   const bandEndX = histX(histDays - 1 + 5);
   const bandY = yToPx(forecast.value);
 
-  const yThreshold5 = yToPx(5);
-  const yThreshold12 = yToPx(12);
+  const yYellow = yToPx(10);
+  const yRed = yToPx(22);
+  const yBaseline = PLOT_H - PAD_B;
+  const xLeft = PAD_L;
+  const xRight = PLOT_W - PAD_R;
 
-  const gradId = `band-${beach.id}`;
+  const histLinePath = smoothPath(histPoints);
+  const histAreaPath =
+    histPoints.length >= 2
+      ? `${histLinePath} L${lastHistX.toFixed(2)},${yBaseline} L${histPoints[0][0].toFixed(2)},${yBaseline} Z`
+      : '';
+
+  const forecastGradId = `fc-${beach.id}`;
+  const areaGradId = `area-${beach.id}`;
 
   return (
     <svg
@@ -60,51 +91,65 @@ function HistoryForecastChart({ beach }: { beach: TimelineBeach }) {
       aria-label={`${beach.name} chlorophyll history and forecast`}
     >
       <defs>
-        <linearGradient id={gradId} x1="0" x2="0" y1="0" y2="1">
+        <linearGradient id={forecastGradId} x1="0" x2="0" y1="0" y2="1">
           <stop offset="0%" stopColor={color} stopOpacity="0.45" />
           <stop offset="100%" stopColor={color} stopOpacity="0.05" />
         </linearGradient>
+        <linearGradient id={areaGradId} x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stopColor="var(--foreground)" stopOpacity="0.22" />
+          <stop offset="100%" stopColor="var(--foreground)" stopOpacity="0" />
+        </linearGradient>
       </defs>
 
-      <line
-        x1={PAD_L}
-        x2={PLOT_W - PAD_R}
-        y1={yThreshold5}
-        y2={yThreshold5}
-        stroke="var(--warn)"
-        strokeWidth={0.6}
-        strokeDasharray="3 3"
-        opacity={0.5}
+      {/* risk threshold bands */}
+      <rect
+        x={xLeft}
+        y={PAD_T}
+        width={xRight - xLeft}
+        height={yRed - PAD_T}
+        fill="var(--bloom)"
+        opacity={0.1}
       />
-      <line
-        x1={PAD_L}
-        x2={PLOT_W - PAD_R}
-        y1={yThreshold12}
-        y2={yThreshold12}
-        stroke="var(--bloom)"
-        strokeWidth={0.6}
-        strokeDasharray="3 3"
-        opacity={0.5}
+      <rect
+        x={xLeft}
+        y={yRed}
+        width={xRight - xLeft}
+        height={yYellow - yRed}
+        fill="var(--warn)"
+        opacity={0.09}
       />
-      <text x={4} y={yThreshold5 + 3} className="text-mono" fontSize={8} fill="var(--warn)">
-        5
+      <rect
+        x={xLeft}
+        y={yYellow}
+        width={xRight - xLeft}
+        height={yBaseline - yYellow}
+        fill="var(--chl)"
+        opacity={0.07}
+      />
+
+      {/* threshold tick labels */}
+      <text x={4} y={yYellow + 3} className="text-mono" fontSize={8} fill="var(--warn)">
+        10
       </text>
-      <text x={4} y={yThreshold12 + 3} className="text-mono" fontSize={8} fill="var(--bloom)">
-        12
+      <text x={4} y={yRed + 3} className="text-mono" fontSize={8} fill="var(--bloom)">
+        22
       </text>
 
-      {histPts.length > 1 && (
-        <polyline
+      {/* history area + line */}
+      {histAreaPath && <path d={histAreaPath} fill={`url(#${areaGradId})`} />}
+      {histLinePath && histPoints.length > 1 && (
+        <path
+          d={histLinePath}
           fill="none"
           stroke="var(--foreground)"
-          strokeOpacity={0.55}
-          strokeWidth={1.2}
+          strokeOpacity={0.7}
+          strokeWidth={1.5}
           strokeLinecap="round"
           strokeLinejoin="round"
-          points={histPts.join(' ')}
         />
       )}
 
+      {/* connector to forecast */}
       <line
         x1={lastHistX}
         x2={bandStartX}
@@ -116,12 +161,13 @@ function HistoryForecastChart({ beach }: { beach: TimelineBeach }) {
         opacity={0.7}
       />
 
+      {/* forecast band */}
       <rect
         x={bandStartX}
         y={PAD_T}
         width={bandEndX - bandStartX}
         height={PLOT_H - PAD_T - PAD_B}
-        fill={`url(#${gradId})`}
+        fill={`url(#${forecastGradId})`}
       />
       <line
         x1={bandStartX}
@@ -132,7 +178,7 @@ function HistoryForecastChart({ beach }: { beach: TimelineBeach }) {
         strokeWidth={2}
       />
 
-      <circle cx={lastHistX} cy={lastHistY} r={2.4} fill="var(--foreground)" />
+      <circle cx={lastHistX} cy={lastHistY} r={2.6} fill="var(--foreground)" />
       <circle
         cx={(bandStartX + bandEndX) / 2}
         cy={bandY}
@@ -236,8 +282,9 @@ export function ForecastTimeline({ beaches, heading = true }: Props) {
                   >
                     {riskLabel(b.forecast.risk)}
                   </Badge>
-                  <div className="text-mono mt-1 text-[10px] text-muted-foreground">
-                    {b.forecast.window.start} → {b.forecast.window.end}
+                  <div className="text-mono mt-2 text-sm font-medium tracking-wide text-foreground">
+                    {b.forecast.window.start} <span className="text-muted-foreground">→</span>{' '}
+                    {b.forecast.window.end}
                   </div>
                   <div className="mt-4">
                     <HistoryForecastChart beach={b} />

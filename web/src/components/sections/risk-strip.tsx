@@ -11,41 +11,15 @@ export type RiskStripItem = {
   risk: RiskClass;
   trend: number | null;
   history: number[];
+  latest?: {
+    temperature_c: number;
+    nitrate_no3_mg_l: number;
+    phosphate_po4_mg_l: number;
+    turbidity_ntu: number;
+  };
+  forecastWindow?: { start: string; end: string };
 };
 
-function Sparkline({ data, color }: { data: number[]; color: string }) {
-  const safe = data.length >= 2 ? data : [...data, ...data];
-  const min = Math.min(...safe);
-  const max = Math.max(...safe);
-  const w = 200;
-  const h = 40;
-  const step = w / (safe.length - 1);
-  const pts = safe.map((v, i) => {
-    const x = i * step;
-    const y = h - ((v - min) / (max - min || 1)) * h;
-    return `${x},${y}`;
-  });
-  const id = `g-${color.replace(/[^a-z0-9]/gi, '')}`;
-  return (
-    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="w-full">
-      <defs>
-        <linearGradient id={id} x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.4" />
-          <stop offset="100%" stopColor={color} stopOpacity="0" />
-        </linearGradient>
-      </defs>
-      <polyline
-        fill="none"
-        stroke={color}
-        strokeWidth={1.5}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        points={pts.join(' ')}
-      />
-      <polygon fill={`url(#${id})`} points={`0,${h} ${pts.join(' ')} ${w},${h}`} />
-    </svg>
-  );
-}
 
 type Props = {
   items: RiskStripItem[];
@@ -125,14 +99,22 @@ export function RiskStrip({ items, heading = true, asOfDate }: Props) {
                   </Badge>
                 </div>
 
-                <h3 className="relative mt-6 text-2xl font-medium text-foreground">{b.name}</h3>
+                <h3 className="relative mt-3 text-2xl font-medium text-foreground">{b.name}</h3>
 
-                <div className="relative mt-6 flex items-baseline gap-2">
+                <div className="relative mt-3 flex items-baseline gap-2">
                   <span className="text-mono text-5xl font-light" style={{ color }}>
                     {b.chl.toFixed(1)}
                   </span>
                   <span className="text-mono text-xs text-muted-foreground">µg/L chl-a (T+3..T+5)</span>
                 </div>
+
+                {!single && b.forecastWindow && (
+                  <div className="text-mono relative mt-2 text-xs font-medium tracking-wide text-foreground">
+                    {b.forecastWindow.start}{' '}
+                    <span className="text-muted-foreground">→</span>{' '}
+                    {b.forecastWindow.end}
+                  </div>
+                )}
 
                 {b.trend !== null && (
                   <div className="text-mono relative mt-2 flex items-center gap-2 text-xs">
@@ -144,13 +126,53 @@ export function RiskStrip({ items, heading = true, asOfDate }: Props) {
                   </div>
                 )}
 
-                {b.history.length > 0 && (
-                  <div className="relative mt-6">
-                    <Sparkline data={b.history} color={color} />
-                    <div className="text-mono mt-2 flex justify-between text-[10px] text-muted-foreground">
-                      <span>T-{b.history.length - 1}d</span>
-                      <span>today</span>
+                {single && b.history.length > 0 && (() => {
+                  const min = Math.min(...b.history);
+                  const max = Math.max(...b.history);
+                  const mean = b.history.reduce((a, n) => a + n, 0) / b.history.length;
+                  const stats: Array<{ k: string; v: string }> = [
+                    { k: 'Min', v: `${min.toFixed(1)} µg/L` },
+                    { k: 'Mean', v: `${mean.toFixed(1)} µg/L` },
+                    { k: 'Max', v: `${max.toFixed(1)} µg/L` },
+                  ];
+                  return (
+                    <div className="relative mt-6 grid grid-cols-3 gap-2">
+                      {stats.map((s) => (
+                        <div
+                          key={s.k}
+                          className="rounded-lg border border-border bg-card/40 px-3 py-2"
+                        >
+                          <div className="text-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                            {s.k}
+                          </div>
+                          <div className="text-mono mt-0.5 text-sm text-foreground">{s.v}</div>
+                        </div>
+                      ))}
                     </div>
+                  );
+                })()}
+
+                {single && b.latest && (
+                  <div className="relative mt-4">
+                    <div className="text-mono mb-2 text-[10px] uppercase tracking-widest text-muted-foreground">
+                      Latest reading
+                    </div>
+                    <dl className="divide-y divide-border rounded-lg border border-border bg-card/40">
+                      {[
+                        { k: 'Sea temp', v: `${b.latest.temperature_c.toFixed(1)} °C` },
+                        { k: 'Nitrate', v: `${b.latest.nitrate_no3_mg_l.toFixed(2)} mg/L` },
+                        { k: 'Phosphate', v: `${b.latest.phosphate_po4_mg_l.toFixed(2)} mg/L` },
+                        { k: 'Turbidity', v: `${b.latest.turbidity_ntu.toFixed(1)} NTU` },
+                      ].map((row) => (
+                        <div
+                          key={row.k}
+                          className="flex items-center justify-between px-3 py-2 text-sm"
+                        >
+                          <dt className="text-muted-foreground">{row.k}</dt>
+                          <dd className="text-mono text-foreground">{row.v}</dd>
+                        </div>
+                      ))}
+                    </dl>
                   </div>
                 )}
               </Card>

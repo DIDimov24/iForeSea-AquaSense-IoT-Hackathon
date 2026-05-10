@@ -45,8 +45,8 @@ Auto-generated OpenAPI docs at `/docs`.
 
 ### Pilot location ids
 
-`sarafovo`, `central`, `kraimorie` - stable identifiers used as URL params, ML one-hot
-features, and dataset keys.
+`sarafovo`, `central_beach_burgas`, `kraimorie` - stable identifiers used as URL params,
+ML one-hot features, and dataset keys.
 
 ### Risk classification (deterministic, shared with ML + Web)
 

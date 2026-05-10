@@ -32,7 +32,15 @@ function buildItems(
     const risk = pred?.risk_class ?? classify(chl);
     const name = SHORT_NAMES[id];
 
-    strip.push({ id, name, chl, risk, trend, history: histVals });
+    strip.push({
+      id,
+      name,
+      chl,
+      risk,
+      trend,
+      history: histVals,
+      forecastWindow: pred?.forecast_window,
+    });
 
     if (pred) {
       timeline.push({

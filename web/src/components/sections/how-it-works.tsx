@@ -5,13 +5,13 @@ const STEPS = [
   {
     n: '01',
     t: 'Sensors',
-    d: 'IoT buoys read chlorophyll-a, temperature, salinity, and nitrate every 15 minutes.',
+    d: 'IoT buoys read chlorophyll-a, temperature, nitrate, phosphate, and turbidity twice daily.',
     tag: 'data/raw',
   },
   {
     n: '02',
     t: 'Features',
-    d: 'Pandas pipeline rolls 24/72h windows, lags, and weather joins into model-ready frames.',
+    d: 'Pandas pipeline rolls daily aggregates with 1/2/3/7-day lags and 3/7-day means into model-ready frames.',
     tag: 'ml/features',
   },
   {

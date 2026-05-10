@@ -181,7 +181,7 @@ cd api
 uvicorn api.main:app --reload --port 8000
 ```
 
-Train the **ML model** (optional — pretrained artifacts already in `ml/models/`):
+Train the **ML model** (optional - pretrained artifacts already in `ml/models/`):
 
 ```bash
 cd ml

@@ -70,8 +70,8 @@ These are the stable interfaces between layers. Changing them requires updating 
 
 ## Pilot Locations
 
-| Location ID | Name (BG)             | Name (EN)            |
-| ----------- | --------------------- | -------------------- |
-| `sarafovo`  | Сарафово              | Sarafovo             |
-| `central`   | Централен плаж Бургас | Central Beach Burgas |
-| `kraimorie` | Крайморие             | Kraimorie            |
+| Location ID            | Name (BG)             | Name (EN)            |
+| ---------------------- | --------------------- | -------------------- |
+| `sarafovo`             | Сарафово              | Sarafovo             |
+| `central_beach_burgas` | Централен плаж Бургас | Central Beach Burgas |
+| `kraimorie`            | Крайморие             | Kraimorie            |

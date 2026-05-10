@@ -43,14 +43,14 @@ def build_location_meta(raw: pd.DataFrame) -> dict[str, Location]:
 
 def load_model_artifacts() -> tuple[Any | None, list[str]]:
     if not MODEL_PATH.exists() or not COLUMNS_PATH.exists():
-        logger.warning("Model artifacts missing at %s — using stub predictor.", MODEL_PATH)
+        logger.warning("Model artifacts missing at %s - using stub predictor.", MODEL_PATH)
         return None, []
     try:
         model = joblib.load(MODEL_PATH)
         feature_cols = list(joblib.load(COLUMNS_PATH))
         return model, feature_cols
     except Exception as exc:
-        logger.exception("Failed to load model artifacts: %s — using stub predictor.", exc)
+        logger.exception("Failed to load model artifacts: %s - using stub predictor.", exc)
         return None, []
 
 
