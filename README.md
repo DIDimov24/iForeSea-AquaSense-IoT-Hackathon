@@ -142,7 +142,7 @@ cd web
 npm install
 ```
 
-Install the **backend** (FastAPI) dependencies:
+Install the **backend** (FastAPI) dependencies. The API imports `bloom_ml` at runtime, so install both packages editable into the same venv:
 
 ```bash
 cd api
@@ -151,7 +151,7 @@ python -m venv .venv
 .venv\Scripts\activate
 # macOS / Linux
 # source .venv/bin/activate
-pip install -e .
+pip install -e ../ml -e .
 ```
 
 Install the **ML** package (used to train / run the bloom model):
