@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { SHORT_NAMES, getHealth, getRiskAll } from '@/lib/api';
 import { Sidebar } from './sidebar';
+import { WeatherChip } from './weather';
 
 const TITLES: Record<string, { eyebrow: string; title: string }> = {
   '/': { eyebrow: 'Workspace', title: 'Home' },
@@ -90,11 +91,7 @@ export function Topbar() {
             <span className={`h-1.5 w-1.5 rounded-full ring-pulse ${statusDot}`} />
             {statusLabel}
           </Badge>
-          {asOf && (
-            <div className="text-mono hidden text-sm text-muted-foreground lg:block">
-              Burgas Bay · as of {asOf}
-            </div>
-          )}
+          <WeatherChip asOfFallback={asOf} />
           <ThemeToggle />
         </div>
       </header>

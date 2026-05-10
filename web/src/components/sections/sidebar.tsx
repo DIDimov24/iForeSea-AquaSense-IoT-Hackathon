@@ -14,6 +14,7 @@ import Image from 'next/image';
 import Logo from '@/assets/iforesea_logo.png';
 import { getRiskAll, type RiskClass } from '@/lib/api';
 import { riskColor } from '@/lib/risk';
+import { WeatherBlock } from './weather';
 
 const NAV: ReadonlyArray<{ href: string; label: string; icon: LucideIcon }> = [
   { href: '/', label: 'Home', icon: LayoutGrid },
@@ -134,6 +135,9 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
       </nav>
 
       <div className="border-t border-border p-4">
+        <div className="mb-3 md:hidden">
+          <WeatherBlock />
+        </div>
         <div className="text-mono px-1 text-sm text-muted-foreground">
           v0.1 · synthetic data
         </div>
