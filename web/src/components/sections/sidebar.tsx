@@ -2,7 +2,15 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BookOpen, Info, LayoutGrid, Map as MapIcon, type LucideIcon } from 'lucide-react';
+import {
+  BookOpen,
+  Info,
+  LayoutGrid,
+  Map as MapIcon,
+  type LucideIcon,
+} from 'lucide-react';
+import Image from 'next/image';
+import Logo from '@/assets/iforesea_logo.png';
 
 const NAV: ReadonlyArray<{ href: string; label: string; icon: LucideIcon }> = [
   { href: '/', label: 'Home', icon: LayoutGrid },
@@ -28,7 +36,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <aside className="flex h-full w-full flex-col border-r border-border bg-card">
       <div className="flex h-16 items-center gap-3 border-b border-border px-5">
-        <img src="/favicon.ico" alt="AquaSense logo" className="h-10 w-10 object-contain dark:invert" />
+        <Image src={Logo} alt="AquaSense logo" className="h-10 w-10 object-contain" />
         <span className="text-mono text-lg tracking-[0.12em] text-foreground">
           iForeSea
         </span>
@@ -39,7 +47,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
           Workspace
         </div>
         <ul className="flex flex-col gap-1">
-          {NAV.map((l) => {
+          {NAV.map(l => {
             const active = isActive(pathname, l.href);
             const IconCmp = l.icon;
             return (
@@ -71,7 +79,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
           Beaches
         </div>
         <ul className="flex flex-col gap-1">
-          {BEACHES.map((b) => {
+          {BEACHES.map(b => {
             const href = `/beaches/${b.id}`;
             const active = pathname === href;
             return (
