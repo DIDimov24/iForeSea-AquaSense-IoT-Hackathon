@@ -27,7 +27,7 @@ export default async function MapPage() {
   }
 
   return (
-    <div className="h-full w-full">
+    <div className="isolate h-full w-full">
       <BayMap locations={locations} risk={riskMap} />
     </div>
   );
