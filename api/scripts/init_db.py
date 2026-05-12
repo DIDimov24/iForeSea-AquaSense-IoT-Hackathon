@@ -27,6 +27,26 @@ CREATE TABLE IF NOT EXISTS sent_log (
 
 CREATE INDEX IF NOT EXISTS idx_subs_active_hour
     ON subscriptions (active, hour_local);
+
+-- Supabase Table Editor auto-creates per-column UNIQUE constraints when the
+-- "Is Unique" box is left checked. We want UNIQUE only on the tokens and on
+-- the composite (email, location_id). Drop the rogue ones if they exist.
+ALTER TABLE subscriptions DROP CONSTRAINT IF EXISTS subscriptions_email_key;
+ALTER TABLE subscriptions DROP CONSTRAINT IF EXISTS subscriptions_location_id_key;
+
+-- Idempotent composite unique. Wrap in DO block because there's no
+-- "ADD CONSTRAINT IF NOT EXISTS" in vanilla Postgres.
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'uq_subscriptions_email_location'
+  ) THEN
+    ALTER TABLE subscriptions
+      ADD CONSTRAINT uq_subscriptions_email_location
+      UNIQUE (email, location_id);
+  END IF;
+END$$;
 """
 
 

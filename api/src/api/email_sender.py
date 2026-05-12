@@ -88,6 +88,42 @@ async def send_test(to: str) -> str:
     return await send_email(to, subject, html, text=text)
 
 
+async def send_confirmation(*, to: str, beach_name: str, confirm_url: str) -> str:
+    """Send the double-opt-in confirmation email."""
+    subject = "iForeSea - confirm your subscription"
+    html = f"""\
+<!doctype html>
+<html><body style="margin:0;padding:0;background:#f4f4f5">
+<div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;max-width:540px;margin:0 auto;padding:28px 24px;color:#1f2937;background:#ffffff">
+  <div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#9ca3af">iForeSea</div>
+  <h2 style="margin:8px 0 12px 0;font-size:22px;letter-spacing:-0.01em">Confirm your subscription</h2>
+  <p style="margin:0 0 18px 0;color:#374151;font-size:15px;line-height:1.55">
+    You signed up to receive daily harmful-algal-bloom forecasts for
+    <strong>{beach_name}</strong>. Click below to activate. If you didn&rsquo;t
+    request this, ignore the email and nothing further will be sent.
+  </p>
+  <div style="margin:22px 0 26px 0">
+    <a href="{confirm_url}" style="display:inline-block;padding:12px 22px;border-radius:10px;background:#0f172a;color:#ffffff;text-decoration:none;font-size:14px;font-weight:500">Confirm subscription</a>
+  </div>
+  <p style="margin:0 0 4px 0;font-size:12px;color:#6b7280">Or paste this link into your browser:</p>
+  <p style="margin:0 0 24px 0;font-size:12px;color:#6b7280;word-break:break-all">
+    <a href="{confirm_url}" style="color:#6b7280">{confirm_url}</a>
+  </p>
+  <hr style="border:none;border-top:1px solid #e5e7eb;margin:20px 0 12px 0"/>
+  <p style="font-size:12px;color:#9ca3af;margin:0">
+    iForeSea sends one short email per day at the hour you chose.
+  </p>
+</div>
+</body></html>
+"""
+    text = (
+        f"Confirm your iForeSea subscription for {beach_name}.\n\n"
+        f"Open this link: {confirm_url}\n\n"
+        f"If you didn't request this, ignore the email.\n"
+    )
+    return await send_email(to, subject, html, text=text)
+
+
 _RISK_COLOR = {"green": "#2e8540", "yellow": "#d4a017", "red": "#b91c1c"}
 _RISK_EMOJI = {"green": "✓", "yellow": "!", "red": "✕"}
 _RISK_LABEL = {

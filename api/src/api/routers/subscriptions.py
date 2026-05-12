@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import secrets
 from datetime import datetime, timezone
 
@@ -10,16 +11,35 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..config import PUBLIC_WEB_URL
+from .. import email_sender
+from ..config import LOCATION_NAME_EN, PUBLIC_API_URL, PUBLIC_WEB_URL
 from ..db import get_session, is_configured
 from ..models import Subscription
 from ..schemas import SubscribeIn, SubscribeOut
+
+log = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/subscriptions", tags=["subscriptions"])
 
 
 def _new_token() -> str:
     return secrets.token_urlsafe(32)
+
+
+async def _send_confirmation_safe(email: str, location_id: str, token: str) -> None:
+    """Send confirmation email; log but swallow errors so a Resend hiccup
+    does not roll back the DB row (user can retry by re-POSTing)."""
+    if not email_sender.is_configured():
+        log.warning("Skipping confirmation email: RESEND_API_KEY not set")
+        return
+    confirm_url = f"{PUBLIC_API_URL}/subscriptions/confirm/{token}"
+    beach_name = LOCATION_NAME_EN.get(location_id, location_id)
+    try:
+        await email_sender.send_confirmation(
+            to=email, beach_name=beach_name, confirm_url=confirm_url
+        )
+    except email_sender.EmailError as exc:
+        log.warning("Confirmation email failed for %s: %s", email, exc)
 
 
 @router.get("/healthz")
@@ -44,17 +64,19 @@ async def subscribe(
     )
 
     if existing is None:
+        token = _new_token()
         sub = Subscription(
             email=email,
             location_id=payload.location_id,
             hour_local=payload.hour_local,
             timezone=payload.timezone,
-            confirm_token=_new_token(),
+            confirm_token=token,
             unsubscribe_token=_new_token(),
             active=True,
         )
         session.add(sub)
         await session.commit()
+        await _send_confirmation_safe(email, payload.location_id, token)
         return SubscribeOut(
             status="pending_confirmation",
             message="Check your inbox for a confirmation link.",
@@ -79,10 +101,12 @@ async def subscribe(
             ),
         )
 
-    # Existing but unconfirmed: re-issue confirmation token.
+    # Existing but unconfirmed: re-issue confirmation token + email.
     existing.active = True
-    existing.confirm_token = _new_token()
+    new_token = _new_token()
+    existing.confirm_token = new_token
     await session.commit()
+    await _send_confirmation_safe(email, existing.location_id, new_token)
     return SubscribeOut(
         status="pending_confirmation",
         message="Check your inbox for a confirmation link.",
