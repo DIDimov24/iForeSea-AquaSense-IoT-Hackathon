@@ -12,12 +12,14 @@
 ![TypeScript](https://img.shields.io/badge/-TypeScript-000?logo=typescript)
 ![Python](https://img.shields.io/badge/-Python_3.11+-000?logo=python)
 ![FastAPI](https://img.shields.io/badge/-FastAPI-000?logo=fastapi)
+![Supabase](https://img.shields.io/badge/-Supabase-000?logo=supabase)
 ![TailwindCSS](https://img.shields.io/badge/-TailwindCSS-000?logo=tailwindcss)
 ![shadcn/ui](https://img.shields.io/badge/-shadcn-000?logo=shadcnui)
 ![scikit--learn](https://img.shields.io/badge/-scikit--learn-000?logo=scikitlearn)
 ![pandas](https://img.shields.io/badge/-pandas-000?logo=pandas)
 ![Vercel](https://img.shields.io/badge/-Vercel-000?logo=vercel)
 ![Render](https://img.shields.io/badge/-Render-000?logo=render)
+![Resend](https://img.shields.io/badge/-Resend-000?logo=resend)
 
 <a href="https://iforesea-aquasense-iot-hackathon.vercel.app/">
   <img src="https://img.shields.io/badge/View_Website-181717?style=for-the-badge&logo=vercel&logoColor=white" alt="View Website" />

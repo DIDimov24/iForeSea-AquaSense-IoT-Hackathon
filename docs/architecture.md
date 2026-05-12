@@ -68,6 +68,45 @@ These are the stable interfaces between layers. Changing them requires updating 
 - **ML → API:** the file paths `ml/models/bloom_forecaster.pkl` and `ml/models/feature_columns.pkl`, both joblib-serialized.
 - **API → Web:** the JSON response shape of `GET /risk/{location_id}`, documented in `api/README.md`.
 
+## Email Subscription Pipeline
+
+A second pipeline runs alongside the map and delivers the same forecast as a daily email.
+
+```
+[/subscribe form (web)]
+     │  POST /subscriptions  (email, beach, hour, tz)
+     ▼
+[Supabase Postgres]
+   subscriptions (one row per email × beach, double opt-in)
+   sent_log     (subscription_id, send_date) - idempotency
+     ▲                                  ▲
+     │ confirm / unsubscribe tokens     │ write after send
+     │                                  │
+[FastAPI /subscriptions/*]      [FastAPI dispatcher]
+     │                                  ▲
+     │ Resend (confirm email)           │ POST /internal/tick
+     │                                  │ X-Tick-Secret header
+     ▼                                  │
+[user mailbox]               [GitHub Actions hourly cron]
+                                        │
+                                        ▼
+                            [predictor + Open-Meteo weather]
+                                        │
+                                        ▼
+                                  [Resend (daily email)]
+                                        │
+                                        ▼
+                                  [user mailbox]
+```
+
+Key points:
+
+- **Storage** is Supabase Postgres (managed). The API is the only DB client; no anon key is exposed and there is no user-auth system.
+- **Transactional email** goes through Resend's REST API via `httpx` (kept async, no SDK).
+- **Scheduling** uses a GitHub Actions cron (`0 * * * *` UTC) that POSTs to `/internal/tick`. The dispatcher selects active, confirmed subscriptions whose `hour_local` matches the current local hour for their `timezone`, runs the predictor for each beach, fetches the current Burgas weather once per tick, and sends the email.
+- **Idempotency** is enforced by `sent_log` (composite PK `(subscription_id, send_date)`), so even if the cron fires twice in the same hour a subscriber gets at most one email per local day.
+- **Internal endpoints** (`/internal/tick`, `/internal/test-email`) are gated by an `X-Tick-Secret` header compared in constant time. Confirmation and unsubscribe URLs use unguessable `secrets.token_urlsafe(32)` tokens and redirect back to the web app.
+
 ## Pilot Locations
 
 | Location ID            | Name (BG)             | Name (EN)            |
