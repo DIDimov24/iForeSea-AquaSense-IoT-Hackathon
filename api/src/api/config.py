@@ -29,3 +29,6 @@ CORS_ORIGINS: list[str] = [
     for o in os.getenv("BLOOM_CORS_ORIGINS", _DEFAULT_CORS).split(",")
     if o.strip()
 ]
+
+PUBLIC_WEB_URL: str = os.getenv("PUBLIC_WEB_URL", "http://localhost:3000").rstrip("/")
+PUBLIC_API_URL: str = os.getenv("PUBLIC_API_URL", "http://localhost:8000").rstrip("/")

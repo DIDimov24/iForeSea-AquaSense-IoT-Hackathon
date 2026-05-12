@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import CORS_ORIGINS
 from .loader import build_app_state
-from .routers import health, locations, readings, risk
+from .routers import health, internal, locations, readings, risk, subscriptions
 
 logging.basicConfig(level=logging.INFO)
 
@@ -31,7 +31,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,
-    allow_methods=["GET"],
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 
@@ -39,6 +39,8 @@ app.include_router(health.router)
 app.include_router(locations.router)
 app.include_router(risk.router)
 app.include_router(readings.router)
+app.include_router(subscriptions.router)
+app.include_router(internal.router)
 
 
 @app.get("/", tags=["meta"])

@@ -14,6 +14,7 @@ import { WeatherChip } from './weather';
 const TITLES: Record<string, { eyebrow: string; title: string }> = {
   '/': { eyebrow: 'Workspace', title: 'Home' },
   '/map': { eyebrow: 'Workspace', title: 'Bay Map' },
+  '/subscribe': { eyebrow: 'Workspace', title: 'Subscribe' },
   '/method': { eyebrow: 'Docs', title: 'Method' },
   '/about': { eyebrow: 'Docs', title: 'About' },
 };

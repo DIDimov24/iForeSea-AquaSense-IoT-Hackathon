@@ -5,7 +5,9 @@ from __future__ import annotations
 from datetime import date
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, EmailStr, Field
+
+LocationIdLit = Literal["sarafovo", "central_beach_burgas", "kraimorie"]
 
 RiskClass = Literal["green", "yellow", "red"]
 ModelKind = Literal["real", "stub"]
@@ -51,3 +53,15 @@ class Reading(BaseModel):
     phosphate_po4_mg_l: float
     turbidity_ntu: float
     chlorophyll_a_ug_l: float
+
+
+class SubscribeIn(BaseModel):
+    email: EmailStr
+    location_id: LocationIdLit
+    hour_local: int = Field(8, ge=0, le=23)
+    timezone: str = Field("Europe/Sofia", min_length=1, max_length=64)
+
+
+class SubscribeOut(BaseModel):
+    status: Literal["pending_confirmation", "already_active"]
+    message: str

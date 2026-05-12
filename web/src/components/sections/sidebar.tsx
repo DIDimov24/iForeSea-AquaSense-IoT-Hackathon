@@ -7,6 +7,7 @@ import {
   BookOpen,
   Info,
   LayoutGrid,
+  Mail,
   Map as MapIcon,
   type LucideIcon,
 } from 'lucide-react';
@@ -19,6 +20,7 @@ import { WeatherBlock } from './weather';
 const NAV: ReadonlyArray<{ href: string; label: string; icon: LucideIcon }> = [
   { href: '/', label: 'Home', icon: LayoutGrid },
   { href: '/map', label: 'Map', icon: MapIcon },
+  { href: '/subscribe', label: 'Subscribe', icon: Mail },
   { href: '/method', label: 'Method', icon: BookOpen },
   { href: '/about', label: 'About', icon: Info },
 ];

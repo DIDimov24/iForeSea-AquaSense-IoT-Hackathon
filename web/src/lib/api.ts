@@ -100,3 +100,42 @@ export const getReadings = (id: string, days = 14, opts?: FetchOpts) =>
     `/readings/${encodeURIComponent(id)}?days=${days}`,
     { revalidate: 300, ...opts },
   );
+
+export type SubscribeIn = {
+  email: string;
+  location_id: LocationId;
+  hour_local: number;
+  timezone: string;
+};
+
+export type SubscribeOut = {
+  status: 'pending_confirmation' | 'already_active';
+  message: string;
+};
+
+export async function postSubscribe(
+  body: SubscribeIn,
+  signal?: AbortSignal,
+): Promise<SubscribeOut> {
+  const res = await fetch(`${BASE_URL}/subscriptions`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+    signal,
+  });
+  const text = await res.text().catch(() => '');
+  if (!res.ok) {
+    let detail = text;
+    try {
+      const parsed = JSON.parse(text);
+      if (parsed?.detail) {
+        detail =
+          typeof parsed.detail === 'string'
+            ? parsed.detail
+            : JSON.stringify(parsed.detail);
+      }
+    } catch {}
+    throw new ApiError(res.status, '/subscriptions', detail || 'Request failed');
+  }
+  return JSON.parse(text) as SubscribeOut;
+}

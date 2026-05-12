@@ -1,0 +1,49 @@
+name: hourly-dispatch
+
+on:
+  schedule:
+    # Every hour at :00 UTC. GitHub Actions cron is UTC; the dispatcher
+    # converts each subscriber's local hour internally.
+    - cron: '0 * * * *'
+  workflow_dispatch:
+    inputs:
+      force_send:
+        description: 'Bypass hour-match check (admin only)'
+        required: false
+        default: 'false'
+      only_email:
+        description: 'Limit dispatch to one recipient (admin only)'
+        required: false
+        default: ''
+
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping /internal/tick
+        env:
+          API_URL: ${{ secrets.PUBLIC_API_URL }}
+          TICK_SECRET: ${{ secrets.TICK_SECRET }}
+          FORCE_SEND: ${{ github.event.inputs.force_send }}
+          ONLY_EMAIL: ${{ github.event.inputs.only_email }}
+        run: |
+          set -euo pipefail
+          if [ -z "${API_URL:-}" ] || [ -z "${TICK_SECRET:-}" ]; then
+            echo "::error::Set PUBLIC_API_URL and TICK_SECRET as repo secrets."
+            exit 1
+          fi
+          QS=""
+          if [ "${FORCE_SEND:-false}" = "true" ]; then
+            QS="?force_send=true"
+          fi
+          if [ -n "${ONLY_EMAIL:-}" ]; then
+            if [ -z "$QS" ]; then QS="?"; else QS="${QS}&"; fi
+            QS="${QS}only_email=${ONLY_EMAIL}"
+          fi
+          curl --fail-with-body --show-error --silent \
+               -X POST "${API_URL%/}/internal/tick${QS}" \
+               -H "X-Tick-Secret: ${TICK_SECRET}" \
+               -o response.json
+          echo "Dispatcher summary:"
+          cat response.json
