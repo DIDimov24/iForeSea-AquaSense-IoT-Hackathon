@@ -3,7 +3,7 @@ import type { RiskClass } from './api';
 export type { RiskClass };
 
 export function classify(chl: number): RiskClass {
-  if (chl <= 10) return 'green';
+  if (chl <= 12) return 'green';
   if (chl <= 22) return 'yellow';
   return 'red';
 }

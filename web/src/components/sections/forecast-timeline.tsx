@@ -68,7 +68,7 @@ function HistoryForecastChart({ beach }: { beach: TimelineBeach }) {
   const bandEndX = histX(histDays - 1 + 5);
   const bandY = yToPx(forecast.value);
 
-  const yYellow = yToPx(10);
+  const yYellow = yToPx(12);
   const yRed = yToPx(22);
   const yBaseline = PLOT_H - PAD_B;
   const xLeft = PAD_L;
@@ -129,7 +129,7 @@ function HistoryForecastChart({ beach }: { beach: TimelineBeach }) {
 
       {/* threshold tick labels */}
       <text x={4} y={yYellow + 3} className="text-mono" fontSize={8} fill="var(--warn)">
-        10
+        12
       </text>
       <text x={4} y={yRed + 3} className="text-mono" fontSize={8} fill="var(--bloom)">
         22

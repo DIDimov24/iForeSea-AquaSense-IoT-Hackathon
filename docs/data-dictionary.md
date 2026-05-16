@@ -41,6 +41,6 @@ This document describes the columns of the simulated Burgas Bay water-quality da
 
   | Class     | Range (µg/L)        | Meaning                                            |
   | --------- | ------------------- | -------------------------------------------------- |
-  | 🟢 green  | `<= 10`             | Good ecological condition / low bloom risk         |
-  | 🟡 yellow | `> 10` and `<= 22`  | Moderate eutrophication risk                       |
+  | 🟢 green  | `<= 12`             | Good ecological condition / low bloom risk         |
+  | 🟡 yellow | `> 12` and `<= 22`  | Moderate eutrophication risk                       |
   | 🔴 red    | `> 22`              | High bloom risk / possible HAB conditions          |

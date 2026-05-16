@@ -35,8 +35,8 @@ Traffic-light status derived from `chlorophyll_a_ug_l`:
 
 | Class                                      | Color  | Threshold (µg/L)   |
 | ------------------------------------------ | ------ | ------------------ |
-| Good ecological condition / low bloom risk | Green  | `<= 10`            |
-| Moderate eutrophication risk               | Yellow | `> 10` and `<= 22` |
+| Good ecological condition / low bloom risk | Green  | `<= 12`            |
+| Moderate eutrophication risk               | Yellow | `> 12` and `<= 22` |
 | High bloom risk / possible HAB conditions  | Red    | `> 22`             |
 
 Mapping is a pure function - keep identical between ML and frontend.

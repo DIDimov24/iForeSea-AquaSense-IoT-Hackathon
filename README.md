@@ -32,7 +32,6 @@
 - [Overview](#overview)
   - [Why it matters](#why-it-matters)
   - [How it works](#how-it-works)
-  - [Preview](#preview)
   - [Architecture](#architecture)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
@@ -67,12 +66,6 @@ Algal blooms degrade water quality, cause foul odor, reduce transparency, pose h
 2. The **ML model** analyzes the relationships between temperature, nutrients (N/P), and turbidity, and forecasts the chlorophyll-a trajectory as a bloom indicator.
 3. The **FastAPI backend** serves predictions through a REST API.
 4. The **Next.js web app** renders the bay map with color-coded risk markers per beach.
-
-### Preview
-
-<!-- later images -->
-
-![](./)
 
 ### Architecture
 

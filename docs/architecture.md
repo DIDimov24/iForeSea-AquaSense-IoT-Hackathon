@@ -55,8 +55,8 @@ The regressor outputs a chlorophyll-a value in µg/L. A pure (deterministic) fun
 
 | Class     | Chlorophyll-a (µg/L) | Meaning                                            |
 | --------- | -------------------- | -------------------------------------------------- |
-| 🟢 green  | `<= 10`              | Good ecological condition / low bloom risk         |
-| 🟡 yellow | `> 10` and `<= 22`   | Moderate eutrophication risk                       |
+| 🟢 green  | `<= 12`              | Good ecological condition / low bloom risk         |
+| 🟡 yellow | `> 12` and `<= 22`   | Moderate eutrophication risk                       |
 | 🔴 red    | `> 22`               | High bloom risk / possible HAB conditions          |
 
 Because the mapping is a pure function, the same predicted value always yields the same class - making results easy to interpret and reproduce.

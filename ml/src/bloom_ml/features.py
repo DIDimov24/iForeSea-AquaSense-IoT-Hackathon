@@ -88,7 +88,7 @@ def feature_columns(df: pd.DataFrame) -> list[str]:
 
 
 def to_risk_class(chlorophyll_ug_l: float) -> str:
-    if chlorophyll_ug_l <= 10:
+    if chlorophyll_ug_l <= 12:
         return "green"
     if chlorophyll_ug_l <= 22:
         return "yellow"

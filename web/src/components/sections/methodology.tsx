@@ -19,13 +19,13 @@ export function Methodology() {
             {
               c: 'var(--chl)',
               l: 'Safe',
-              r: '≤ 10 µg/L',
+              r: '≤ 12 µg/L',
               d: 'Good ecological condition. Low bloom risk; no restrictions.',
             },
             {
               c: 'var(--warn)',
               l: 'Caution',
-              r: '10 - 22 µg/L',
+              r: '12 - 22 µg/L',
               d: 'Moderate eutrophication risk. Monitor closely; avoid prolonged exposure for sensitive groups.',
             },
             {
