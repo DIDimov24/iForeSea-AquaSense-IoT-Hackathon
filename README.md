@@ -39,6 +39,7 @@
   - [Usage](#usage)
   - [Dataset](#dataset)
 - [About](#about)
+  - [Presentation](#presentation)
   - [License](#license)
   - [Contributors](#contributors)
 
@@ -216,6 +217,12 @@ See [`data/raw/README.md`](./data/raw/README.md) for full column reference and r
 The data is synthetic but seasonally structured and correlated, suitable for prototyping, visualization, correlation analysis, and ML experimentation.
 
 ## About
+
+### Presentation
+
+View the project presentation on Canva:
+
+[![View Presentation](https://img.shields.io/badge/View_Presentation-8B3DFF?style=for-the-badge&logo=canva&logoColor=white)](https://canva.link/pw321dhhoz15n3r)
 
 ### License
 
