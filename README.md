@@ -213,7 +213,7 @@ The repo ships with a simulated dataset for Burgas Bay at `data/water_quality_bu
 - **Rows:** 2196
 - **Columns:** timestamp, measurement_session, location_id, location_name_bg, lat/lon, temperature (°C), NO₃ (mg/L), PO₄ (mg/L), turbidity (NTU), chlorophyll-a (µg/L)
 
-See [`data/raw/README.md`](./data/raw/README.md) for full column reference and risk-class thresholds.
+See [`data/README.md`](./data/README.md) for full column reference and risk-class thresholds.
 
 The data is synthetic but seasonally structured and correlated, suitable for prototyping, visualization, correlation analysis, and ML experimentation.
 
