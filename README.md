@@ -15,7 +15,8 @@
 ![Supabase](https://img.shields.io/badge/-Supabase-000?logo=supabase)
 ![TailwindCSS](https://img.shields.io/badge/-TailwindCSS-000?logo=tailwindcss)
 ![shadcn/ui](https://img.shields.io/badge/-shadcn-000?logo=shadcnui)
-![scikit--learn](https://img.shields.io/badge/-scikit--learn-000?logo=scikitlearn)
+![Leaflet](https://img.shields.io/badge/-Leaflet-000?logo=leaflet)
+![Framer Motion](https://img.shields.io/badge/-Framer_Motion-000?logo=framer)![scikit--learn](https://img.shields.io/badge/-scikit--learn-000?logo=scikitlearn)
 ![pandas](https://img.shields.io/badge/-pandas-000?logo=pandas)
 ![Vercel](https://img.shields.io/badge/-Vercel-000?logo=vercel)
 ![Render](https://img.shields.io/badge/-Render-000?logo=render)
@@ -110,7 +111,7 @@ Algal blooms degrade water quality, cause foul odor, reduce transparency, pose h
 | Data     | `data/` | CSV (raw, processed, samples) - synthetic dataset for now |
 | ML       | `ml/`   | Python 3.11+, pandas, scikit-learn                        |
 | Backend  | `api/`  | Python 3.11+, FastAPI, Uvicorn                            |
-| Frontend | `web/`  | Next.js 16, TypeScript, Tailwind v4, shadcn/ui            |
+| Frontend | `web/`  | Next.js 16, TypeScript, Tailwind v4, shadcn/ui, Leaflet, Framer Motion |
 | Docs     | `docs/` | Project documentation                                     |
 
 ## Getting Started
